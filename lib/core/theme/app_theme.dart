@@ -30,6 +30,10 @@ class AppTheme {
         foregroundColor: AppColors.onPrimary,
         elevation: 0,
       ),
+      tabBarTheme: const TabBarThemeData(
+        labelColor: AppColors.tabSelected,
+        unselectedLabelColor: AppColors.tabUnselected,
+      ),
     );
   }
 }

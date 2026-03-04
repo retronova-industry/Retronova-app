@@ -1,4 +1,3 @@
-// lib/providers/auth_provider.dart
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +11,6 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = true;
   String? _errorMessage;
 
-  // Getters
   User? get user => _user;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -28,48 +26,31 @@ class AuthProvider with ChangeNotifier {
     super.dispose();
   }
 
-  // Initialiser l'authentification
   void _initializeAuth() {
     try {
-      // Écouter les changements d'état d'authentification
       _authStateSubscription = _authService.authStateChanges.listen(
         _onAuthStateChanged,
         onError: (error) {
-          _setError('Erreur d\'authentification: $error');
+          _setError("Erreur d'authentification: $error");
           _setLoading(false);
         },
       );
     } catch (e) {
-      _setError('Erreur d\'initialisation: $e');
+      _setError("Erreur lors de l'initialisation: $e");
       _setLoading(false);
     }
   }
 
-  // Gestion des changements d'état d'authentification
-  void _onAuthStateChanged(User? user) async {
-    try {
-      print('Auth state changed: ${user?.uid}'); // Debug
+  void _onAuthStateChanged(User? user) {
+    print("Auth state changed: ${user?.uid}");
 
-      _user = user;
-      _clearError();
-
-      // Si vous voulez intégrer votre API plus tard,
-      // c'est ici que vous pourrez charger les données utilisateur
-      if (user != null) {
-        print('User authenticated: ${user.email}'); // Debug
-        // TODO: Intégrer votre API ici
-        // await _loadUserDataFromYourAPI();
-      } else {
-        print('User signed out'); // Debug
-      }
-    } catch (e) {
-      _setError('Erreur lors du chargement: $e');
-    } finally {
-      _setLoading(false);
-    }
+    _user = user;
+    _clearError();
+    _setLoading(false);
+    notifyListeners();
   }
 
-  // Inscription
+  // ========== SIGN UP ==========
   Future<bool> signUp({
     required String email,
     required String password,
@@ -82,50 +63,48 @@ class AuthProvider with ChangeNotifier {
         fullName: fullName,
       );
 
-      // Attendre un peu que l'état se mette à jour
-      await Future.delayed(const Duration(milliseconds: 300));
+      // Attendre *vraiment* que Firebase connecte l'utilisateur
+      await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
+
       return true;
     });
   }
 
-  // Connexion
-  Future<bool> signIn({
-    required String email,
-    required String password,
-  }) async {
+  // ========== SIGN IN ==========
+  Future<bool> signIn({required String email, required String password}) async {
     return _performAuthAction(() async {
-      // Vérifier si l'utilisateur est déjà connecté avec le même email
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null && currentUser.email == email) {
-        print('User already signed in with this email: ${currentUser.email}');
-        return true; // Considérer comme un succès
-      }
+      // Déjà connecté ?
+      final current = FirebaseAuth.instance.currentUser;
+      if (current != null && current.email == email) return true;
 
       await _authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Attendre un peu que l'état se mette à jour
-      await Future.delayed(const Duration(milliseconds: 300));
+      await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
+
       return true;
     });
   }
 
-  // Déconnexion
+  // ========== SIGN OUT ==========
   Future<void> signOut() async {
     try {
       _setLoading(true);
       await _authService.signOut();
-      print('User signed out manually'); // Debug
     } catch (e) {
-      _setError('Erreur lors de la déconnexion: $e');
+      _setError("Erreur lors de la déconnexion: $e");
     } finally {
       _setLoading(false);
     }
   }
 
-  // Réinitialisation du mot de passe
+  // ========== RESET PASSWORD ==========
   Future<bool> resetPassword(String email) async {
     return _performAuthAction(() async {
       await _authService.resetPassword(email);
@@ -133,62 +112,36 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  // Méthode utilitaire pour gérer les actions d'authentification avec timeout
+  // ========== CORE ACTION HANDLER ==========
   Future<bool> _performAuthAction(Future<bool> Function() action) async {
     try {
       _setLoading(true);
       _clearError();
 
-      // Utiliser un Completer pour gérer le timeout manuellement
-      final completer = Completer<bool>();
-      late Timer timeoutTimer;
-
-      // Démarrer l'action
-      action().then((result) {
-        if (!completer.isCompleted) {
-          timeoutTimer.cancel();
-          completer.complete(result);
-        }
-      }).catchError((error) {
-        if (!completer.isCompleted) {
-          timeoutTimer.cancel();
-          completer.completeError(error);
-        }
-      });
-
-      // Démarrer le timer de timeout
-      timeoutTimer = Timer(const Duration(seconds: 30), () {
-        if (!completer.isCompleted) {
-          completer.completeError(TimeoutException('Timeout', const Duration(seconds: 30)));
-        }
-      });
-
-      return await completer.future;
+      return await action().timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw TimeoutException("Timeout"),
+      );
     } catch (e) {
-      if (e is TimeoutException) {
-        _setError('L\'opération a pris trop de temps. Veuillez réessayer.');
-      } else {
-        _setError(e.toString());
-      }
+      _setError(e.toString());
       return false;
     } finally {
-      // Ne pas arrêter le loading ici car _onAuthStateChanged le fera
-      // _setLoading(false);
+      _setLoading(false);
     }
   }
 
-  // Gestion des états
+  // ========== HELPERS ==========
   void _setLoading(bool loading) {
     if (_isLoading != loading) {
       _isLoading = loading;
-      print('Auth loading state: $loading'); // Debug
+      print("Loading: $loading");
       notifyListeners();
     }
   }
 
   void _setError(String error) {
     _errorMessage = error;
-    print('AuthProvider Error: $error');
+    print("Auth Error: $error");
     notifyListeners();
   }
 
@@ -199,14 +152,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Nettoyer l'erreur manuellement
-  void clearError() {
-    _clearError();
-  }
+  void clearError() => _clearError();
 
-  // Forcer la vérification de l'état actuel
-  void checkAuthState() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    _onAuthStateChanged(currentUser);
-  }
+  void checkAuthState() =>
+      _onAuthStateChanged(FirebaseAuth.instance.currentUser);
 }
