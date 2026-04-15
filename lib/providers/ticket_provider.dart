@@ -150,7 +150,9 @@ class TicketProvider with ChangeNotifier {
           transactionId,
         );
         _latestPurchaseStatus = status;
-        _ticketBalance = status.currentBalance;
+        if (status.currentBalance != null) {
+          _ticketBalance = status.currentBalance!;
+        }
 
         if (status.status == TicketPurchaseStatus.succeeded) {
           _isPollingPurchase = false;

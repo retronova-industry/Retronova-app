@@ -4,14 +4,14 @@ class TicketPurchaseStatusModel {
   TicketPurchaseStatusModel({
     required this.transactionId,
     required this.status,
-    required this.currentBalance,
+    this.currentBalance,
     this.ticketsReceived,
     this.amountPaid,
   });
 
   final int transactionId;
   final TicketPurchaseStatus status;
-  final int currentBalance;
+  final int? currentBalance;
   final int? ticketsReceived;
   final double? amountPaid;
 
@@ -21,11 +21,12 @@ class TicketPurchaseStatusModel {
 
   factory TicketPurchaseStatusModel.fromJson(Map<String, dynamic> json) {
     return TicketPurchaseStatusModel(
-      transactionId: json['transaction_id'] as int,
+      transactionId:
+          _toIntOrNull(json['transaction_id'] ?? json['purchase_id']) ?? 0,
       status: _parseStatus(json['status']?.toString()),
       ticketsReceived: _toIntOrNull(json['tickets_received']),
       amountPaid: _toDoubleOrNull(json['amount_paid']),
-      currentBalance: _toIntOrNull(json['current_balance']) ?? 0,
+      currentBalance: _toIntOrNull(json['current_balance'] ?? json['balance']),
     );
   }
 
@@ -33,8 +34,13 @@ class TicketPurchaseStatusModel {
     switch (raw) {
       case 'pending':
         return TicketPurchaseStatus.pending;
+      case 'paid':
       case 'succeeded':
+      case 'completed':
         return TicketPurchaseStatus.succeeded;
+      case 'expired':
+      case 'canceled':
+      case 'cancelled':
       case 'failed':
         return TicketPurchaseStatus.failed;
       default:
