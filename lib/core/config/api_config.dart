@@ -1,5 +1,21 @@
 class ApiConfig {
-  static const String baseUrl = 'http://192.168.1.45:8000/api/v1';
+  static const String baseUrl = 'http://10.31.34.93:8000/api/v1';
+  static const String stripeReturnScheme = 'retronova';
+  static const String stripeReturnHost = 'checkout';
+  static const String stripeSuccessPath = '/success';
+  static const String stripeCancelPath = '/cancel';
+
+  static Uri get stripeSuccessUri => Uri(
+    scheme: stripeReturnScheme,
+    host: stripeReturnHost,
+    path: stripeSuccessPath,
+  );
+
+  static Uri get stripeCancelUri => Uri(
+    scheme: stripeReturnScheme,
+    host: stripeReturnHost,
+    path: stripeCancelPath,
+  );
 
   // Endpoints
   static const String auth = '/auth';

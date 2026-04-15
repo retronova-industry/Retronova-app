@@ -18,7 +18,8 @@ class ArcadeScreen extends StatefulWidget {
   State<ArcadeScreen> createState() => _ArcadeScreenState();
 }
 
-class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMixin {
+class _ArcadeScreenState extends State<ArcadeScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
 
@@ -29,7 +30,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
 
     // Charger les données au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final arcadeProvider = Provider.of<ArcadeProvider>(context, listen: false);
+      final arcadeProvider = Provider.of<ArcadeProvider>(
+        context,
+        listen: false,
+      );
       arcadeProvider.loadAllData();
     });
   }
@@ -56,7 +60,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
           controller: _tabController,
           tabs: const [
             Tab(text: 'Bornes', icon: Icon(Icons.sports_esports)),
-            Tab(text: 'Mes réservations', icon: Icon(Icons.event_seat)),
+            Tab(text: 'Réservations', icon: Icon(Icons.event_seat)),
             Tab(text: 'Jeux', icon: Icon(Icons.videogame_asset)),
           ],
         ),
@@ -89,12 +93,12 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                onPressed: () {
-                  _searchController.clear();
-                  arcadeProvider.clearSearch();
-                },
-                icon: const Icon(Icons.clear),
-              )
+                      onPressed: () {
+                        _searchController.clear();
+                        arcadeProvider.clearSearch();
+                      },
+                      icon: const Icon(Icons.clear),
+                    )
                   : null,
               border: const OutlineInputBorder(),
             ),
@@ -105,9 +109,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
         ),
 
         // Liste des bornes
-        Expanded(
-          child: _buildArcadesList(arcadeProvider),
-        ),
+        Expanded(child: _buildArcadesList(arcadeProvider)),
       ],
     );
   }
@@ -126,7 +128,8 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
       );
     }
 
-    if (arcadeProvider.arcades.isEmpty && arcadeProvider.searchQuery.isNotEmpty) {
+    if (arcadeProvider.arcades.isEmpty &&
+        arcadeProvider.searchQuery.isNotEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,7 +220,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.deepPurple.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -250,19 +256,12 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
               // Localisation
               Row(
                 children: [
-                  Icon(
-                    Icons.place,
-                    size: 16,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.place, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       arcade.localisation,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ),
                 ],
@@ -272,10 +271,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                 const SizedBox(height: 8),
                 Text(
                   arcade.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -287,10 +283,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
               if (arcade.games.isNotEmpty) ...[
                 const Text(
                   'Jeux disponibles :',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -299,7 +292,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                   children: [
                     ...arcade.games.take(3).map((game) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -316,7 +312,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                     }).toList(),
                     if (arcade.games.length > 3)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.grey.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -344,7 +343,8 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ArcadeDetailScreen(arcade: arcade),
+                          builder: (context) =>
+                              ArcadeDetailScreen(arcade: arcade),
                         ),
                       );
                     },
@@ -355,12 +355,13 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                   ElevatedButton.icon(
                     onPressed: arcade.games.isNotEmpty
                         ? () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ReservationScreen(arcade: arcade),
-                        ),
-                      );
-                    }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ReservationScreen(arcade: arcade),
+                              ),
+                            );
+                          }
                         : null,
                     icon: const Icon(Icons.event_seat, size: 18),
                     label: const Text('Réserver'),
@@ -432,7 +433,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
     );
   }
 
-  Widget _buildReservationCard(ReservationModel reservation, ArcadeProvider arcadeProvider) {
+  Widget _buildReservationCard(
+    ReservationModel reservation,
+    ArcadeProvider arcadeProvider,
+  ) {
     Color statusColor;
     IconData statusIcon;
 
@@ -476,7 +480,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -503,8 +510,16 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
             const SizedBox(height: 8),
 
             // Informations de la réservation
-            _buildReservationInfo('Borne', reservation.arcadeName, Icons.sports_esports),
-            _buildReservationInfo('Joueurs', reservation.playersText, Icons.people),
+            _buildReservationInfo(
+              'Borne',
+              reservation.arcadeName,
+              Icons.sports_esports,
+            ),
+            _buildReservationInfo(
+              'Joueurs',
+              reservation.playersText,
+              Icons.people,
+            ),
 
             if (reservation.isWaiting && reservation.positionInQueue != null)
               _buildReservationInfo(
@@ -535,7 +550,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton.icon(
-                    onPressed: () => _showCancelReservationDialog(reservation, arcadeProvider),
+                    onPressed: () => _showCancelReservationDialog(
+                      reservation,
+                      arcadeProvider,
+                    ),
                     icon: const Icon(Icons.cancel_outlined, color: Colors.red),
                     label: const Text(
                       'Annuler',
@@ -545,7 +563,8 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                   const SizedBox(width: 8),
                   if (reservation.isWaiting)
                     TextButton.icon(
-                      onPressed: () => arcadeProvider.refreshReservation(reservation.id),
+                      onPressed: () =>
+                          arcadeProvider.refreshReservation(reservation.id),
                       icon: const Icon(Icons.refresh),
                       label: const Text('Actualiser'),
                     ),
@@ -567,18 +586,12 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
           const SizedBox(width: 8),
           Text(
             '$label: ',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -658,7 +671,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.deepPurple.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -690,10 +706,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
               const SizedBox(height: 8),
               Text(
                 game.description,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
               ),
             ],
 
@@ -702,10 +715,7 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
             // Informations du jeu
             Row(
               children: [
-                _buildGameInfo(
-                  game.playersDescription,
-                  Icons.people,
-                ),
+                _buildGameInfo(game.playersDescription, Icons.people),
                 const SizedBox(width: 16),
                 _buildGameInfo(
                   '${availableArcades.length} borne${availableArcades.length > 1 ? 's' : ''}',
@@ -718,51 +728,56 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
               const SizedBox(height: 12),
               const Text(
                 'Disponible sur :',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: availableArcades.take(2).map((arcade) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      arcade.nom,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.green,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  );
-                }).toList()
-                  ..addAll(availableArcades.length > 2
-                      ? [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '+${availableArcades.length - 2}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
+                children:
+                    availableArcades.take(2).map((arcade) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
                         ),
-                      ),
-                    )
-                  ]
-                      : []),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          arcade.nom,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    }).toList()..addAll(
+                      availableArcades.length > 2
+                          ? [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '+${availableArcades.length - 2}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : [],
+                    ),
               ),
             ],
           ],
@@ -777,18 +792,15 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
       children: [
         Icon(icon, size: 16, color: Colors.grey[600]),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(text, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
       ],
     );
   }
 
-  void _showCancelReservationDialog(ReservationModel reservation, ArcadeProvider arcadeProvider) {
+  void _showCancelReservationDialog(
+    ReservationModel reservation,
+    ArcadeProvider arcadeProvider,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -825,7 +837,9 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                final success = await arcadeProvider.cancelReservation(reservation.id);
+                final success = await arcadeProvider.cancelReservation(
+                  reservation.id,
+                );
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -833,7 +847,8 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
                       content: Text(
                         success
                             ? 'Réservation annulée et tickets remboursés'
-                            : arcadeProvider.errorMessage ?? 'Erreur lors de l\'annulation',
+                            : arcadeProvider.errorMessage ??
+                                  'Erreur lors de l\'annulation',
                       ),
                       backgroundColor: success ? Colors.green : Colors.red,
                     ),
@@ -841,7 +856,10 @@ class _ArcadeScreenState extends State<ArcadeScreen> with TickerProviderStateMix
 
                   if (success) {
                     // Actualiser le solde de tickets
-                    Provider.of<TicketProvider>(context, listen: false).loadBalance();
+                    Provider.of<TicketProvider>(
+                      context,
+                      listen: false,
+                    ).loadBalance();
                   }
                 }
               },

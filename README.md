@@ -116,6 +116,21 @@ class ApiConfig {
 }
 ```
 
+### Configuration Stripe Checkout (retour dans l'app)
+
+Le flux de paiement actuel utilise **Stripe Checkout en redirection externe**.
+
+- URL de retour succès à configurer côté backend Stripe :
+  `retronova://checkout/success`
+- URL de retour annulation à configurer côté backend Stripe :
+  `retronova://checkout/cancel`
+
+Le backend doit aussi exposer :
+
+- `POST /tickets/purchase` (création session Stripe Checkout)
+- `GET /tickets/purchase/{id}/status` (statut transaction)
+- webhook Stripe (`checkout.session.completed`, événements d'échec)
+
 ## 🚀 Lancement
 
 ### Développement

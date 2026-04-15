@@ -1,11 +1,13 @@
 // lib/presentation/screens/store/store_screen.dart - Version avec codes promo
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/ticket_provider.dart';
 import '../../../models/ticket_offer_model.dart';
 import '../../../models/ticket_purchase_model.dart';
 import '../../../models/promo_code_model.dart';
+import '../../../models/ticket_purchase_status_model.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -14,27 +16,45 @@ class StoreScreen extends StatefulWidget {
   State<StoreScreen> createState() => _StoreScreenState();
 }
 
-class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin {
+class _StoreScreenState extends State<StoreScreen>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
   final TextEditingController _promoCodeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 4, vsync: this); // Maintenant 4 tabs
 
     // Charger les données au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+      final ticketProvider = Provider.of<TicketProvider>(
+        context,
+        listen: false,
+      );
       ticketProvider.loadAllData();
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     _promoCodeController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !mounted) {
+      return;
+    }
+
+    final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+    if (ticketProvider.hasPendingCheckout) {
+      _handleAppReturnedFromCheckout(ticketProvider);
+    }
   }
 
   @override
@@ -84,35 +104,117 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
     }
 
     if (ticketProvider.offers.isEmpty) {
+      final hasError = ticketProvider.errorMessage != null;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.store_outlined, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'Aucune offre disponible',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+            Icon(
+              hasError ? Icons.error_outline : Icons.store_outlined,
+              size: 64,
+              color: hasError ? Colors.red : Colors.grey,
             ),
+            const SizedBox(height: 16),
+            Text(
+              hasError
+                  ? 'Impossible de charger les offres'
+                  : 'Aucune offre disponible',
+              style: TextStyle(
+                fontSize: 18,
+                color: hasError ? Colors.red : Colors.grey,
+              ),
+            ),
+            if (hasError) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  ticketProvider.errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ticketProvider.loadOffers(),
-              child: const Text('Actualiser'),
+              child: const Text('Réessayer'),
             ),
           ],
         ),
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: () => ticketProvider.loadOffers(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: ticketProvider.offers.length,
-        itemBuilder: (context, index) {
-          final offer = ticketProvider.offers[index];
-          return _buildOfferCard(offer, ticketProvider);
-        },
+    return Column(
+      children: [
+        if (ticketProvider.purchaseMessage != null ||
+            ticketProvider.isPollingPurchase)
+          _buildPurchaseStatusBanner(ticketProvider),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => ticketProvider.loadOffers(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: ticketProvider.offers.length,
+              itemBuilder: (context, index) {
+                final offer = ticketProvider.offers[index];
+                return _buildOfferCard(offer, ticketProvider);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPurchaseStatusBanner(TicketProvider ticketProvider) {
+    final status = ticketProvider.latestPurchaseStatus?.status;
+    final isSuccess = status == TicketPurchaseStatus.succeeded;
+    final isFailed = status == TicketPurchaseStatus.failed;
+
+    Color backgroundColor;
+    if (isSuccess) {
+      backgroundColor = Colors.green.shade100;
+    } else if (isFailed) {
+      backgroundColor = Colors.red.shade100;
+    } else {
+      backgroundColor = Colors.orange.shade100;
+    }
+
+    IconData icon;
+    if (isSuccess) {
+      icon = Icons.check_circle;
+    } else if (isFailed) {
+      icon = Icons.error;
+    } else {
+      icon = Icons.hourglass_bottom;
+    }
+
+    return Container(
+      width: double.infinity,
+      color: backgroundColor,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              ticketProvider.purchaseMessage ?? 'Paiement en cours...',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (ticketProvider.isPollingPurchase)
+            TextButton(
+              onPressed: ticketProvider.cancelPurchasePolling,
+              child: const Text('Annuler'),
+            )
+          else
+            TextButton(
+              onPressed: ticketProvider.clearPurchaseFlow,
+              child: const Text('Fermer'),
+            ),
+        ],
       ),
     );
   }
@@ -133,11 +235,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.redeem,
-                        color: Colors.deepPurple,
-                        size: 28,
-                      ),
+                      Icon(Icons.redeem, color: Colors.deepPurple, size: 28),
                       const SizedBox(width: 12),
                       const Text(
                         'Utiliser un code promo',
@@ -151,10 +249,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                   const SizedBox(height: 16),
                   const Text(
                     'Entrez votre code promo pour obtenir des tickets gratuits !',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -192,13 +287,15 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                         ),
                         child: ticketProvider.isUsingPromo
                             ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            strokeWidth: 2,
-                          ),
-                        )
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : const Text('Utiliser'),
                       ),
                     ],
@@ -219,11 +316,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.history,
-                        color: Colors.green,
-                        size: 24,
-                      ),
+                      Icon(Icons.history, color: Colors.green, size: 24),
                       const SizedBox(width: 8),
                       const Text(
                         'Codes promo utilisés',
@@ -241,7 +334,11 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                         padding: EdgeInsets.all(32),
                         child: Column(
                           children: [
-                            Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: 48,
+                              color: Colors.grey,
+                            ),
                             SizedBox(height: 16),
                             Text(
                               'Aucun code promo utilisé',
@@ -256,7 +353,8 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: ticketProvider.promoHistory.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final promo = ticketProvider.promoHistory[index];
                         return _buildPromoHistoryCard(promo);
@@ -314,10 +412,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
           color: Colors.green.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Icon(
-          Icons.check_circle,
-          color: Colors.green,
-        ),
+        child: const Icon(Icons.check_circle, color: Colors.green),
       ),
       title: Text(
         promo.code,
@@ -326,9 +421,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
           fontFamily: 'monospace',
         ),
       ),
-      subtitle: Text(
-        _formatDate(promo.usedAt),
-      ),
+      subtitle: Text(_formatDate(promo.usedAt)),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
@@ -379,7 +472,9 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                         'Code promo utilisé !',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text('Votre nouveau solde : ${ticketProvider.ticketBalance} tickets'),
+                      Text(
+                        'Votre nouveau solde : ${ticketProvider.ticketBalance} tickets',
+                      ),
                     ],
                   ),
                 ),
@@ -398,7 +493,8 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              ticketProvider.errorMessage ?? 'Erreur lors de l\'utilisation du code promo',
+              ticketProvider.errorMessage ??
+                  'Erreur lors de l\'utilisation du code promo',
             ),
             backgroundColor: Colors.red,
           ),
@@ -407,7 +503,10 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
     }
   }
 
-  Widget _buildOfferCard(TicketOfferModel offer, TicketProvider ticketProvider) {
+  Widget _buildOfferCard(
+    TicketOfferModel offer,
+    TicketProvider ticketProvider,
+  ) {
     final isGoodDeal = offer.isGoodDeal;
 
     return Card(
@@ -418,10 +517,10 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
           borderRadius: BorderRadius.circular(12),
           gradient: isGoodDeal
               ? LinearGradient(
-            colors: [Colors.green.shade50, Colors.green.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
+                  colors: [Colors.green.shade50, Colors.green.shade100],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
               : null,
         ),
         child: Padding(
@@ -443,7 +542,10 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                   ),
                   if (isGoodDeal)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(8),
@@ -530,11 +632,15 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: ticketProvider.isPurchasing
+                  onPressed:
+                      ticketProvider.isPurchasing ||
+                          ticketProvider.isPollingPurchase
                       ? null
                       : () => _showPurchaseDialog(offer, ticketProvider),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isGoodDeal ? Colors.green : Colors.deepPurple,
+                    backgroundColor: isGoodDeal
+                        ? Colors.green
+                        : Colors.deepPurple,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -543,27 +649,29 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                   ),
                   child: ticketProvider.isPurchasing
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2,
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                            strokeWidth: 2,
+                          ),
+                        )
                       : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.shopping_cart, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Acheter ${offer.ticketsAmount} tickets',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.shopping_cart, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Acheter ${offer.ticketsAmount} tickets',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -612,10 +720,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
                   const SizedBox(height: 16),
                   const Text(
                     'Mon solde de tickets',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -641,7 +746,8 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
             const SizedBox(height: 32),
 
             // Statistiques
-            if (ticketProvider.purchaseHistory.isNotEmpty || ticketProvider.promoHistory.isNotEmpty) ...[
+            if (ticketProvider.purchaseHistory.isNotEmpty ||
+                ticketProvider.promoHistory.isNotEmpty) ...[
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -732,12 +838,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
       children: [
         Icon(icon, size: 20, color: Colors.deepPurple),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ),
+        Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
         Text(
           value,
           style: const TextStyle(
@@ -751,7 +852,9 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
   }
 
   Widget _buildHistoryTab(TicketProvider ticketProvider) {
-    final hasHistory = ticketProvider.purchaseHistory.isNotEmpty || ticketProvider.promoHistory.isNotEmpty;
+    final hasHistory =
+        ticketProvider.purchaseHistory.isNotEmpty ||
+        ticketProvider.promoHistory.isNotEmpty;
 
     if (!hasHistory) {
       return Center(
@@ -787,7 +890,9 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: ticketProvider.purchaseHistory.length + ticketProvider.promoHistory.length,
+        itemCount:
+            ticketProvider.purchaseHistory.length +
+            ticketProvider.promoHistory.length,
         itemBuilder: (context, index) {
           // Fusionner et trier les historiques par date
           final allHistory = <dynamic>[];
@@ -825,20 +930,13 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
             color: Colors.deepPurple.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.shopping_cart,
-            color: Colors.deepPurple,
-          ),
+          child: const Icon(Icons.shopping_cart, color: Colors.deepPurple),
         ),
         title: Text(
           '${purchase.ticketsReceived} tickets achetés',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(
-          _formatDate(purchase.createdAt),
-        ),
+        subtitle: Text(_formatDate(purchase.createdAt)),
         trailing: Text(
           '${purchase.amountPaid.toStringAsFixed(2)}€',
           style: const TextStyle(
@@ -861,20 +959,13 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
             color: Colors.green.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.redeem,
-            color: Colors.green,
-          ),
+          child: const Icon(Icons.redeem, color: Colors.green),
         ),
         title: Text(
           'Code promo ${promo.code}',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(
-          _formatDate(promo.usedAt),
-        ),
+        subtitle: Text(_formatDate(promo.usedAt)),
         trailing: Text(
           '+${promo.ticketsReceived}',
           style: const TextStyle(
@@ -902,7 +993,10 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
     }
   }
 
-  void _showPurchaseDialog(TicketOfferModel offer, TicketProvider ticketProvider) {
+  void _showPurchaseDialog(
+    TicketOfferModel offer,
+    TicketProvider ticketProvider,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -968,10 +1062,7 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
               const SizedBox(height: 16),
               Text(
                 'Votre solde actuel : ${ticketProvider.ticketBalance} tickets',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               Text(
                 'Nouveau solde : ${ticketProvider.ticketBalance + offer.ticketsAmount} tickets',
@@ -989,12 +1080,22 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
               child: const Text('Annuler'),
             ),
             ElevatedButton(
-              onPressed: () => _processPurchase(offer, ticketProvider),
+              onPressed:
+                  ticketProvider.isPurchasing ||
+                      ticketProvider.isPollingPurchase
+                  ? null
+                  : () => _processPurchase(offer, ticketProvider),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Confirmer l\'achat'),
+              child: ticketProvider.isPurchasing
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Confirmer l\'achat'),
             ),
           ],
         );
@@ -1002,58 +1103,125 @@ class _StoreScreenState extends State<StoreScreen> with TickerProviderStateMixin
     );
   }
 
-  void _processPurchase(TicketOfferModel offer, TicketProvider ticketProvider) async {
-    Navigator.of(context).pop(); // Fermer la dialog
-
-    final success = await ticketProvider.purchaseTickets(offer.id);
-
-    if (mounted) {
-      if (success) {
-        _showSuccessSnackBar(offer, ticketProvider);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              ticketProvider.errorMessage ?? 'Erreur lors de l\'achat',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+  void _processPurchase(
+    TicketOfferModel offer,
+    TicketProvider ticketProvider,
+  ) async {
+    Navigator.of(context).pop();
+    await _startCheckoutRedirect(offer, ticketProvider);
   }
 
-  void _showSuccessSnackBar(TicketOfferModel offer, TicketProvider ticketProvider) {
+  Future<void> _startCheckoutRedirect(
+    TicketOfferModel offer,
+    TicketProvider ticketProvider,
+  ) async {
+    final checkout = await ticketProvider.startCheckoutPurchase(offer.id);
+    if (!mounted) {
+      return;
+    }
+
+    if (checkout == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ticketProvider.errorMessage ??
+                'Erreur lors du démarrage du paiement',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final uri = Uri.tryParse(checkout.checkoutUrl);
+    if (uri == null || !_isAllowedCheckoutUrl(uri)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('URL Stripe Checkout invalide'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (!launched) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible d’ouvrir Stripe Checkout'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    ticketProvider.markCheckoutLaunched();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Achat réussi !',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${offer.ticketsAmount} tickets ajoutés à votre solde',
-                  ),
-                ],
-              ),
-            ),
-          ],
+        content: Text(
+          'Finalisez le paiement Stripe, puis revenez dans l’app pour confirmer l’achat ${offer.name}.',
         ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 4),
-        action: SnackBarAction(
-          label: 'Voir le solde',
-          textColor: Colors.white,
-          onPressed: () => _tabController.animateTo(2),
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+
+  bool _isAllowedCheckoutUrl(Uri uri) {
+    if (!(uri.isScheme('https') || uri.isScheme('http'))) {
+      return false;
+    }
+
+    final host = uri.host.toLowerCase();
+    return host == 'checkout.stripe.com' || host.endsWith('.stripe.com');
+  }
+
+  Future<void> _handleAppReturnedFromCheckout(
+    TicketProvider ticketProvider,
+  ) async {
+    final status = await ticketProvider.pollActivePurchaseStatus();
+    if (!mounted || status == null) {
+      return;
+    }
+
+    if (status.status == TicketPurchaseStatus.succeeded) {
+      await ticketProvider.loadBalance();
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Paiement confirmé. Nouveau solde: ${ticketProvider.ticketBalance} tickets.',
+          ),
+          backgroundColor: Colors.green,
+          action: SnackBarAction(
+            label: 'Voir le solde',
+            textColor: Colors.white,
+            onPressed: () => _tabController.animateTo(2),
+          ),
         ),
+      );
+      return;
+    }
+
+    if (status.status == TicketPurchaseStatus.failed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Paiement échoué ou annulé. Aucun ticket crédité.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Paiement toujours en attente. Vérification en cours...'),
       ),
     );
   }

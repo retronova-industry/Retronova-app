@@ -45,7 +45,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       context: context,
       initialDate: DateTime(2000),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now().subtract(const Duration(days: 365 * 13)), // Minimum 13 ans
+      lastDate: DateTime.now().subtract(
+        const Duration(days: 365 * 13),
+      ), // Minimum 13 ans
     );
 
     if (picked != null && picked != _selectedDate) {
@@ -82,7 +84,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final success = await authProvider.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
-          fullName: '${_prenomController.text.trim()} ${_nomController.text.trim()}',
+          fullName:
+              '${_prenomController.text.trim()} ${_nomController.text.trim()}',
         );
 
         if (success && mounted) {
@@ -98,15 +101,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
           await ApiService().registerUser(user);
-
-          // Déconnecter l'utilisateur après l'inscription pour éviter les conflits
-          await authProvider.signOut();
-
+          
           if (mounted) {
             // Afficher un message de succès
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Compte créé avec succès ! Vous pouvez maintenant vous connecter.'),
+                content: Text(
+                  'Compte créé avec succès ! Vous pouvez maintenant vous connecter.',
+                ),
                 backgroundColor: Colors.green,
                 duration: Duration(seconds: 3),
               ),
@@ -115,19 +117,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // Rediriger vers l'écran de connexion avec l'email pré-rempli
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => LoginScreen(
-                  preFilledEmail: _emailController.text.trim(),
-                ),
+                builder: (context) =>
+                    LoginScreen(preFilledEmail: _emailController.text.trim()),
               ),
             );
           }
         }
       } catch (e) {
         if (mounted) {
-          // En cas d'erreur, déconnecter l'utilisateur de Firebase pour éviter les états incohérents
           final authProvider = Provider.of<AuthProvider>(context, listen: false);
           await authProvider.signOut();
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Erreur lors de l\'inscription: $e'),
@@ -181,10 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const Text(
                   'Rejoignez la communauté Retronova',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
 
                 const SizedBox(height: 32),
@@ -331,7 +327,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ? _formatDate(_selectedDate!)
                           : 'Sélectionner votre date de naissance',
                       style: TextStyle(
-                        color: _selectedDate != null ? Colors.black87 : Colors.grey,
+                        color: _selectedDate != null
+                            ? Colors.black87
+                            : Colors.grey,
                       ),
                     ),
                   ),
@@ -423,17 +421,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2,
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                            strokeWidth: 2,
+                          ),
+                        )
                       : const Text(
-                    'S\'inscrire',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                          'S\'inscrire',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
 
                 const SizedBox(height: 32),
