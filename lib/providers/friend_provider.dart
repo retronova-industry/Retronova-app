@@ -1,7 +1,6 @@
 // lib/providers/friend_provider.dart
 import 'package:flutter/foundation.dart';
 import '../models/friend_model.dart';
-import '../models/user_model.dart';
 import '../models/user_search_model.dart';
 import '../services/friend_service.dart';
 
@@ -10,7 +9,8 @@ class FriendProvider with ChangeNotifier {
 
   List<FriendModel> _friends = [];
   List<FriendshipModel> _friendRequests = [];
-  List<UserSearchResult> _searchResults = []; // CHANGÉ: UserSearchResult pour la recherche
+  List<UserSearchResult> _searchResults =
+      []; // CHANGÉ: UserSearchResult pour la recherche
   bool _isLoading = false;
   bool _isSearching = false;
   String? _errorMessage;
@@ -18,7 +18,8 @@ class FriendProvider with ChangeNotifier {
   // Getters
   List<FriendModel> get friends => _friends;
   List<FriendshipModel> get friendRequests => _friendRequests;
-  List<UserSearchResult> get searchResults => _searchResults; // CHANGÉ: UserSearchResult
+  List<UserSearchResult> get searchResults =>
+      _searchResults; // CHANGÉ: UserSearchResult
   bool get isLoading => _isLoading;
   bool get isSearching => _isSearching;
   String? get errorMessage => _errorMessage;

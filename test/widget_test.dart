@@ -9,22 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:retronova_app/providers/auth_provider.dart';
-import 'package:retronova_app/main.dart';
 
 void main() {
   testWidgets('App loads correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ],
+        providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
         child: const MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: Text('Test'),
-            ),
-          ),
+          home: Scaffold(body: Center(child: Text('Test'))),
         ),
       ),
     );

@@ -1,11 +1,9 @@
 // lib/services/friend_service.dart
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../core/config/api_config.dart';
 import '../models/friend_model.dart';
-import '../models/user_model.dart';
 import '../models/user_search_model.dart';
 
 class FriendService {
@@ -73,7 +71,9 @@ class FriendService {
       if (token == null) throw Exception('Token Firebase non disponible');
 
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/users/search?q=${Uri.encodeComponent(query)}'),
+        Uri.parse(
+          '${ApiConfig.baseUrl}/users/search?q=${Uri.encodeComponent(query)}',
+        ),
         headers: ApiConfig.getHeaders(token: token),
       );
 
@@ -109,7 +109,9 @@ class FriendService {
 
       if (response.statusCode != 200) {
         final error = jsonDecode(response.body);
-        throw Exception(error['detail'] ?? 'Erreur lors de l\'envoi de la demande');
+        throw Exception(
+          error['detail'] ?? 'Erreur lors de l\'envoi de la demande',
+        );
       }
     } catch (e) {
       throw Exception('Erreur de connexion: $e');

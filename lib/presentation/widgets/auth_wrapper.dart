@@ -15,6 +15,8 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool _initialTicketLoadDone = false;
+
   @override
   void initState() {
     super.initState();
@@ -30,19 +32,28 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        print('AuthWrapper building - isLoading: ${authProvider.isLoading}, isAuthenticated: ${authProvider.isAuthenticated}'); // Debug
+        print(
+          'AuthWrapper building - isLoading: ${authProvider.isLoading}, isAuthenticated: ${authProvider.isAuthenticated}',
+        ); // Debug
 
         // Si l'utilisateur est connecté, afficher l'application principale
         if (authProvider.isAuthenticated && !authProvider.isLoading) {
           print('User is authenticated, showing main app'); // Debug
 
           // Charger les données de tickets une fois connecté
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
-            ticketProvider.loadBalance();
-          });
+          if (!_initialTicketLoadDone) {
+            _initialTicketLoadDone = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              Provider.of<TicketProvider>(context, listen: false).loadBalance();
+            });
+          }
 
           return const MainNavigation();
+        }
+
+        if (!authProvider.isAuthenticated) {
+          _initialTicketLoadDone = false;
         }
 
         // Écran de chargement
@@ -66,10 +77,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   const SizedBox(height: 16),
                   const Text(
                     'Connexion en cours...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
               ),
