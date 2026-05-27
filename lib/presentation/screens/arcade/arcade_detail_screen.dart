@@ -1,5 +1,6 @@
 // lib/presentation/screens/arcade/arcade_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../models/arcade_model.dart';
 import '../../../models/game_model.dart';
@@ -10,10 +11,7 @@ import 'reservation_screen.dart';
 class ArcadeDetailScreen extends StatelessWidget {
   final ArcadeModel arcade;
 
-  const ArcadeDetailScreen({
-    super.key,
-    required this.arcade,
-  });
+  const ArcadeDetailScreen({super.key, required this.arcade});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +47,7 @@ class ArcadeDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.deepPurple, Colors.deepPurple.shade300],
+          colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -80,7 +78,7 @@ class ArcadeDetailScreen extends StatelessWidget {
                       arcade.nom,
                       style: const TextStyle(
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                         color: Colors.white,
                       ),
                     ),
@@ -90,6 +88,7 @@ class ArcadeDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],
@@ -122,44 +121,27 @@ class ArcadeDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.location_on,
-                color: Colors.deepPurple,
-                size: 20,
-              ),
+              Icon(Icons.location_on, color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               const Text(
                 'Localisation',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             arcade.localisation,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 16, color: AppColors.grey15),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(
-                Icons.navigation,
-                color: Colors.grey[600],
-                size: 16,
-              ),
+              Icon(Icons.navigation, color: Colors.grey[600], size: 16),
               const SizedBox(width: 4),
               Text(
                 'Distance: ${arcade.formattedDistance}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -188,18 +170,11 @@ class ArcadeDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.info_outline,
-                color: Colors.deepPurple,
-                size: 20,
-              ),
+              Icon(Icons.info_outline, color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               const Text(
                 'Description',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -208,7 +183,7 @@ class ArcadeDetailScreen extends StatelessWidget {
             arcade.description,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.black87,
+              color: AppColors.grey15,
               height: 1.5,
             ),
           ),
@@ -238,18 +213,11 @@ class ArcadeDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Icon(
-                  Icons.videogame_asset,
-                  color: Colors.deepPurple,
-                  size: 20,
-                ),
+                Icon(Icons.videogame_asset, color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
                 const Text(
                   'Jeux disponibles',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -268,10 +236,7 @@ class ArcadeDetailScreen extends StatelessWidget {
                     SizedBox(height: 8),
                     Text(
                       'Aucun jeu disponible',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ],
                 ),
@@ -300,15 +265,15 @@ class ArcadeDetailScreen extends StatelessWidget {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: Colors.deepPurple.withOpacity(0.1),
+          color: AppColors.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
           child: Text(
             '${game.slotNumber}',
             style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
               fontSize: 16,
             ),
           ),
@@ -316,10 +281,7 @@ class ArcadeDetailScreen extends StatelessWidget {
       ),
       title: Text(
         game.nom,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,10 +290,7 @@ class ArcadeDetailScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               game.description,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 13,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -341,7 +300,10 @@ class ArcadeDetailScreen extends StatelessWidget {
             children: [
               _buildGameInfo(game.playersDescription, Icons.people),
               const SizedBox(width: 16),
-              _buildGameInfo('${game.ticketCost} tickets', Icons.confirmation_number),
+              _buildGameInfo(
+                '${game.ticketCost} tickets',
+                Icons.confirmation_number,
+              ),
             ],
           ),
         ],
@@ -350,15 +312,13 @@ class ArcadeDetailScreen extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ReservationScreen(
-                arcade: arcade,
-                selectedGame: game,
-              ),
+              builder: (context) =>
+                  ReservationScreen(arcade: arcade, selectedGame: game),
             ),
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
@@ -371,19 +331,9 @@ class ArcadeDetailScreen extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 14,
-          color: Colors.grey[600],
-        ),
+        Icon(icon, size: 14, color: Colors.grey[600]),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(text, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -437,7 +387,7 @@ class ArcadeDetailScreen extends StatelessWidget {
             icon: const Icon(Icons.event_seat),
             label: const Text('Faire une réservation'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(

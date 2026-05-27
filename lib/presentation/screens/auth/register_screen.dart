@@ -1,5 +1,6 @@
 // lib/presentation/screens/auth/register_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../providers/auth_provider.dart';
@@ -101,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
           await ApiService().registerUser(user);
-          
+
           if (mounted) {
             // Afficher un message de succès
             ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +126,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       } catch (e) {
         if (mounted) {
-          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+          final authProvider = Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          );
           await authProvider.signOut();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -158,10 +162,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 40),
 
                 // Logo et titre
-                const Icon(
-                  Icons.sports_esports,
-                  size: 80,
-                  color: Colors.deepPurple,
+                Image.asset(
+                  'assets/images/brand/retronova-logo-primary.png',
+                  height: 132,
+                  semanticLabel: 'Retronova',
                 ),
                 const SizedBox(height: 24),
 
@@ -170,8 +174,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
                   ),
                 ),
 
@@ -328,7 +332,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           : 'Sélectionner votre date de naissance',
                       style: TextStyle(
                         color: _selectedDate != null
-                            ? Colors.black87
+                            ? AppColors.grey15
                             : Colors.grey,
                       ),
                     ),
@@ -412,7 +416,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleRegister,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -434,7 +438,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'S\'inscrire',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                 ),
@@ -456,7 +460,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       child: const Text(
                         'Se connecter',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],

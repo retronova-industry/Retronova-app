@@ -1,5 +1,6 @@
 // lib/presentation/widgets/auth_wrapper.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/ticket_provider.dart';
@@ -46,31 +47,24 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         // Écran de chargement
         if (authProvider.isLoading) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.sports_esports,
-                    size: 80,
-                    color: Colors.deepPurple,
+                  Image.asset(
+                    'assets/images/brand/retronova-logo-primary.png',
+                    width: 220,
+                    semanticLabel: 'Retronova',
                   ),
-                  SizedBox(height: 24),
-                  Text(
-                    'Retronova',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                  const SizedBox(height: 32),
+                  const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
                     ),
                   ),
-                  SizedBox(height: 32),
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
+                  const SizedBox(height: 16),
+                  const Text(
                     'Connexion en cours...',
                     style: TextStyle(
                       fontSize: 16,

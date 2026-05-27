@@ -1,5 +1,6 @@
 // lib/presentation/screens/arcade/arcade_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/arcade_provider.dart';
@@ -215,7 +216,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                       arcade.nom,
                       style: const TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -225,7 +226,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -234,15 +235,15 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                         Icon(
                           Icons.location_on,
                           size: 14,
-                          color: Colors.deepPurple,
+                          color: AppColors.primary,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           arcade.formattedDistance,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.deepPurple,
-                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
@@ -283,7 +284,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
               if (arcade.games.isNotEmpty) ...[
                 const Text(
                   'Jeux disponibles :',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -305,7 +306,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.green,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       );
@@ -325,7 +326,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -366,7 +367,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                     icon: const Icon(Icons.event_seat, size: 18),
                     label: const Text('Réserver'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                     ),
                   ),
@@ -475,7 +476,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                     reservation.gameName,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -498,7 +499,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                         style: TextStyle(
                           fontSize: 12,
                           color: statusColor,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -591,7 +592,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -666,7 +667,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                     game.nom,
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -676,7 +677,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -685,15 +686,15 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                       Icon(
                         Icons.confirmation_number,
                         size: 14,
-                        color: Colors.deepPurple,
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${game.ticketCost}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.deepPurple,
-                          fontWeight: FontWeight.w500,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -728,7 +729,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
               const SizedBox(height: 12),
               const Text(
                 'Disponible sur :',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -750,7 +751,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.green,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       );
@@ -771,7 +772,7 @@ class _ArcadeScreenState extends State<ArcadeScreen>
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ),

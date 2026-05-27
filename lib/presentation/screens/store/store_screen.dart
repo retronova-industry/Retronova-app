@@ -1,5 +1,6 @@
 // lib/presentation/screens/store/store_screen.dart - Version avec codes promo
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_strings.dart';
@@ -201,7 +202,7 @@ class _StoreScreenState extends State<StoreScreen>
           Expanded(
             child: Text(
               ticketProvider.purchaseMessage ?? 'Paiement en cours...',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),
           if (ticketProvider.isPollingPurchase)
@@ -235,13 +236,13 @@ class _StoreScreenState extends State<StoreScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.redeem, color: Colors.deepPurple, size: 28),
+                      Icon(Icons.redeem, color: AppColors.primary, size: 28),
                       const SizedBox(width: 12),
                       const Text(
                         'Utiliser un code promo',
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -278,7 +279,7 @@ class _StoreScreenState extends State<StoreScreen>
                             ? null
                             : () => _usePromoCode(ticketProvider),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -322,7 +323,7 @@ class _StoreScreenState extends State<StoreScreen>
                         'Codes promo utilisés',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -379,7 +380,7 @@ class _StoreScreenState extends State<StoreScreen>
                       'Statistiques codes promo',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -417,7 +418,7 @@ class _StoreScreenState extends State<StoreScreen>
       title: Text(
         promo.code,
         style: const TextStyle(
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w800,
           fontFamily: 'monospace',
         ),
       ),
@@ -432,7 +433,7 @@ class _StoreScreenState extends State<StoreScreen>
           '+${promo.ticketsReceived}',
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Colors.green,
           ),
         ),
@@ -470,7 +471,7 @@ class _StoreScreenState extends State<StoreScreen>
                     children: [
                       const Text(
                         'Code promo utilisé !',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.w800),
                       ),
                       Text(
                         'Votre nouveau solde : ${ticketProvider.ticketBalance} tickets',
@@ -536,7 +537,7 @@ class _StoreScreenState extends State<StoreScreen>
                       offer.name,
                       style: const TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -554,7 +555,7 @@ class _StoreScreenState extends State<StoreScreen>
                         'PROMO',
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           fontSize: 12,
                         ),
                       ),
@@ -569,12 +570,12 @@ class _StoreScreenState extends State<StoreScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.confirmation_number,
-                      color: Colors.deepPurple,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -587,8 +588,8 @@ class _StoreScreenState extends State<StoreScreen>
                           '${offer.ticketsAmount} tickets',
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
                           ),
                         ),
                         Text(
@@ -608,8 +609,8 @@ class _StoreScreenState extends State<StoreScreen>
                         '${offer.priceEuros.toStringAsFixed(2)}€',
                         style: const TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
                         ),
                       ),
                       if (isGoodDeal)
@@ -618,7 +619,7 @@ class _StoreScreenState extends State<StoreScreen>
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.green,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                     ],
@@ -640,7 +641,7 @@ class _StoreScreenState extends State<StoreScreen>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isGoodDeal
                         ? Colors.green
-                        : Colors.deepPurple,
+                        : AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -667,7 +668,7 @@ class _StoreScreenState extends State<StoreScreen>
                               'Acheter ${offer.ticketsAmount} tickets',
                               style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ],
@@ -697,14 +698,14 @@ class _StoreScreenState extends State<StoreScreen>
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.deepPurple, Colors.deepPurple.shade300],
+                  colors: [AppColors.primary, AppColors.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple.withOpacity(0.3),
+                    color: AppColors.primary.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -720,7 +721,11 @@ class _StoreScreenState extends State<StoreScreen>
                   const SizedBox(height: 16),
                   const Text(
                     'Mon solde de tickets',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                    style: TextStyle(
+                      color: AppColors.onPrimaryMuted,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -728,7 +733,7 @@ class _StoreScreenState extends State<StoreScreen>
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 48,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -737,6 +742,7 @@ class _StoreScreenState extends State<StoreScreen>
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
@@ -758,7 +764,7 @@ class _StoreScreenState extends State<StoreScreen>
                         'Statistiques',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -806,7 +812,7 @@ class _StoreScreenState extends State<StoreScreen>
                     icon: const Icon(Icons.shopping_cart),
                     label: const Text('Acheter tickets'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -836,15 +842,15 @@ class _StoreScreenState extends State<StoreScreen>
   Widget _buildStatRow(String label, String value, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.deepPurple),
+        Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 8),
         Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
         Text(
           value,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
           ),
         ),
       ],
@@ -927,22 +933,22 @@ class _StoreScreenState extends State<StoreScreen>
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.deepPurple.withOpacity(0.1),
+            color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.shopping_cart, color: Colors.deepPurple),
+          child: const Icon(Icons.shopping_cart, color: AppColors.primary),
         ),
         title: Text(
           '${purchase.ticketsReceived} tickets achetés',
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(_formatDate(purchase.createdAt)),
         trailing: Text(
           '${purchase.amountPaid.toStringAsFixed(2)}€',
           style: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
           ),
         ),
       ),
@@ -963,14 +969,14 @@ class _StoreScreenState extends State<StoreScreen>
         ),
         title: Text(
           'Code promo ${promo.code}',
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(_formatDate(promo.usedAt)),
         trailing: Text(
           '+${promo.ticketsReceived}',
           style: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Colors.green,
           ),
         ),
@@ -1022,7 +1028,7 @@ class _StoreScreenState extends State<StoreScreen>
                         const Text('Tickets :'),
                         Text(
                           '${offer.ticketsAmount}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -1034,8 +1040,8 @@ class _StoreScreenState extends State<StoreScreen>
                         Text(
                           '${offer.priceEuros.toStringAsFixed(2)}€',
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -1049,7 +1055,7 @@ class _StoreScreenState extends State<StoreScreen>
                           Text(
                             '${offer.savings.toStringAsFixed(2)}€',
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: Colors.green,
                             ),
                           ),
@@ -1068,8 +1074,8 @@ class _StoreScreenState extends State<StoreScreen>
                 'Nouveau solde : ${ticketProvider.ticketBalance + offer.ticketsAmount} tickets',
                 style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -1086,7 +1092,7 @@ class _StoreScreenState extends State<StoreScreen>
                   ? null
                   : () => _processPurchase(offer, ticketProvider),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
               child: ticketProvider.isPurchasing

@@ -1,5 +1,6 @@
 // lib/presentation/widgets/ticket_balance_widget.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../providers/ticket_provider.dart';
 
@@ -50,7 +51,7 @@ class TicketBalanceWidget extends StatelessWidget {
                   style: TextStyle(
                     color: textColor ?? Colors.white,
                     fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ],
@@ -63,13 +64,11 @@ class TicketBalanceWidget extends StatelessWidget {
 }
 
 // Widget pour l'AppBar
-class AppBarTicketBalance extends StatelessWidget implements PreferredSizeWidget {
+class AppBarTicketBalance extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title;
 
-  const AppBarTicketBalance({
-    super.key,
-    required this.title,
-  });
+  const AppBarTicketBalance({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +77,7 @@ class AppBarTicketBalance extends StatelessWidget implements PreferredSizeWidget
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16),
-          child: Center(
-            child: TicketBalanceWidget(),
-          ),
+          child: Center(child: TicketBalanceWidget()),
         ),
       ],
     );
@@ -102,7 +99,7 @@ class CompactTicketBalance extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.deepPurple, Colors.deepPurple.shade300],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -120,7 +117,7 @@ class CompactTicketBalance extends StatelessWidget {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],

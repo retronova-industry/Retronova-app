@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../providers/auth_provider.dart';
@@ -24,7 +25,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      final success = await authProvider.resetPassword(_emailController.text.trim());
+      final success = await authProvider.resetPassword(
+        _emailController.text.trim(),
+      );
 
       if (mounted) {
         if (success) {
@@ -38,7 +41,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(authProvider.errorMessage ?? 'Erreur lors de l\'envoi'),
+              content: Text(
+                authProvider.errorMessage ?? 'Erreur lors de l\'envoi',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -54,7 +59,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         title: const Text('Mot de passe oublié'),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.deepPurple,
+        foregroundColor: AppColors.primary,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -70,7 +75,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const Icon(
                   Icons.lock_reset,
                   size: 80,
-                  color: Colors.deepPurple,
+                  color: AppColors.primary,
                 ),
 
                 const SizedBox(height: 32),
@@ -80,8 +85,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
                   ),
                 ),
 
@@ -90,10 +95,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const Text(
                   'Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
 
                 const SizedBox(height: 40),
@@ -126,9 +128,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
                     return ElevatedButton(
-                      onPressed: authProvider.isLoading ? null : _handleResetPassword,
+                      onPressed: authProvider.isLoading
+                          ? null
+                          : _handleResetPassword,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -137,17 +141,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       child: authProvider.isLoading
                           ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          strokeWidth: 2,
-                        ),
-                      )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                                strokeWidth: 2,
+                              ),
+                            )
                           : const Text(
-                        'Envoyer le lien',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                              'Envoyer le lien',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                     );
                   },
                 ),
@@ -159,10 +168,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text(
                     'Retour à la connexion',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                   ),
                 ),
               ],

@@ -1,5 +1,6 @@
 // lib/presentation/screens/arcade/reservation_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../models/arcade_model.dart';
 import '../../../models/game_model.dart';
@@ -13,11 +14,7 @@ class ReservationScreen extends StatefulWidget {
   final ArcadeModel arcade;
   final GameOnArcadeModel? selectedGame;
 
-  const ReservationScreen({
-    super.key,
-    required this.arcade,
-    this.selectedGame,
-  });
+  const ReservationScreen({super.key, required this.arcade, this.selectedGame});
 
   @override
   State<ReservationScreen> createState() => _ReservationScreenState();
@@ -60,7 +57,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
             const SizedBox(height: 20),
             _buildGameSelection(),
             const SizedBox(height: 20),
-            if (_selectedGame != null && _selectedGame!.supportsMultiplayer) ...[
+            if (_selectedGame != null &&
+                _selectedGame!.supportsMultiplayer) ...[
               _buildMultiplayerOption(),
               const SizedBox(height: 20),
             ],
@@ -88,45 +86,28 @@ class _ReservationScreenState extends State<ReservationScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.sports_esports,
-                  color: Colors.deepPurple,
-                  size: 24,
-                ),
+                Icon(Icons.sports_esports, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 const Text(
                   'Borne d\'arcade',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             Text(
               widget.arcade.nom,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(
-                  Icons.location_on,
-                  size: 16,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     widget.arcade.localisation,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ),
                 Text(
@@ -134,7 +115,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
@@ -154,18 +135,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.videogame_asset,
-                  color: Colors.deepPurple,
-                  size: 24,
-                ),
+                Icon(Icons.videogame_asset, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 const Text(
                   'Sélectionner un jeu',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -210,11 +184,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? Colors.deepPurple : Colors.grey.shade300,
+            color: isSelected ? AppColors.primary : Colors.grey.shade300,
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(8),
-          color: isSelected ? Colors.deepPurple.withOpacity(0.05) : null,
+          color: isSelected ? AppColors.primary.withOpacity(0.05) : null,
         ),
         child: Row(
           children: [
@@ -223,7 +197,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
               height: 40,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.deepPurple.withOpacity(0.2)
+                    ? AppColors.primary.withOpacity(0.2)
                     : Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
@@ -231,8 +205,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 child: Text(
                   '${game.slotNumber}',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.deepPurple : Colors.grey[600],
+                    fontWeight: FontWeight.w800,
+                    color: isSelected ? AppColors.primary : Colors.grey[600],
                   ),
                 ),
               ),
@@ -245,25 +219,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   Text(
                     game.nom,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.deepPurple : null,
+                      fontWeight: FontWeight.w800,
+                      color: isSelected ? AppColors.primary : null,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(
-                        Icons.people,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
+                      Icon(Icons.people, size: 14, color: Colors.grey[600]),
                       const SizedBox(width: 4),
                       Text(
                         game.playersDescription,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       const SizedBox(width: 16),
                       Icon(
@@ -277,7 +244,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -285,11 +252,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 ],
               ),
             ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: Colors.deepPurple,
-              ),
+            if (isSelected) Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),
@@ -305,18 +268,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.people,
-                  color: Colors.deepPurple,
-                  size: 24,
-                ),
+                Icon(Icons.people, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 const Text(
                   'Mode de jeu',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -336,24 +292,32 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: !_isMultiplayer ? Colors.deepPurple : Colors.grey.shade300,
+                          color: !_isMultiplayer
+                              ? AppColors.primary
+                              : Colors.grey.shade300,
                           width: !_isMultiplayer ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
-                        color: !_isMultiplayer ? Colors.deepPurple.withOpacity(0.05) : null,
+                        color: !_isMultiplayer
+                            ? AppColors.primary.withOpacity(0.05)
+                            : null,
                       ),
                       child: Column(
                         children: [
                           Icon(
                             Icons.person,
-                            color: !_isMultiplayer ? Colors.deepPurple : Colors.grey[600],
+                            color: !_isMultiplayer
+                                ? AppColors.primary
+                                : Colors.grey[600],
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Solo',
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: !_isMultiplayer ? Colors.deepPurple : Colors.grey[600],
+                              fontWeight: FontWeight.w800,
+                              color: !_isMultiplayer
+                                  ? AppColors.primary
+                                  : Colors.grey[600],
                             ),
                           ),
                         ],
@@ -374,24 +338,32 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: _isMultiplayer ? Colors.deepPurple : Colors.grey.shade300,
+                          color: _isMultiplayer
+                              ? AppColors.primary
+                              : Colors.grey.shade300,
                           width: _isMultiplayer ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
-                        color: _isMultiplayer ? Colors.deepPurple.withOpacity(0.05) : null,
+                        color: _isMultiplayer
+                            ? AppColors.primary.withOpacity(0.05)
+                            : null,
                       ),
                       child: Column(
                         children: [
                           Icon(
                             Icons.people,
-                            color: _isMultiplayer ? Colors.deepPurple : Colors.grey[600],
+                            color: _isMultiplayer
+                                ? AppColors.primary
+                                : Colors.grey[600],
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Multijoueur',
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: _isMultiplayer ? Colors.deepPurple : Colors.grey[600],
+                              fontWeight: FontWeight.w800,
+                              color: _isMultiplayer
+                                  ? AppColors.primary
+                                  : Colors.grey[600],
                             ),
                           ),
                         ],
@@ -416,18 +388,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.person_add,
-                  color: Colors.deepPurple,
-                  size: 24,
-                ),
+                Icon(Icons.person_add, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 const Text(
                   'Inviter un ami',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -442,7 +407,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   return const Center(
                     child: Column(
                       children: [
-                        Icon(Icons.people_outline, size: 48, color: Colors.grey),
+                        Icon(
+                          Icons.people_outline,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
                         SizedBox(height: 8),
                         Text(
                           'Aucun ami disponible',
@@ -491,14 +460,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         final friend = friendProvider.friends[index];
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
                             child: Text(
                               friend.pseudo.isNotEmpty
                                   ? friend.pseudo[0].toUpperCase()
                                   : '?',
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primary,
                               ),
                             ),
                           ),
@@ -540,18 +509,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.receipt,
-                  color: Colors.deepPurple,
-                  size: 24,
-                ),
+                Icon(Icons.receipt, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 const Text(
                   'Résumé de la réservation',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
@@ -568,7 +530,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
             const Divider(),
             Consumer<TicketProvider>(
               builder: (context, ticketProvider, child) {
-                final hasEnoughTickets = ticketProvider.ticketBalance >= _selectedGame!.ticketCost;
+                final hasEnoughTickets =
+                    ticketProvider.ticketBalance >= _selectedGame!.ticketCost;
 
                 return Column(
                   children: [
@@ -579,15 +542,15 @@ class _ReservationScreenState extends State<ReservationScreen> {
                           'Coût en tickets',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                         Text(
                           '${_selectedGame!.ticketCost}',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -600,7 +563,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         Text(
                           '${ticketProvider.ticketBalance}',
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                             color: hasEnoughTickets ? Colors.green : Colors.red,
                           ),
                         ),
@@ -614,7 +577,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         Text(
                           '${ticketProvider.ticketBalance - _selectedGame!.ticketCost}',
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w800,
                             color: hasEnoughTickets ? Colors.green : Colors.red,
                           ),
                         ),
@@ -627,15 +590,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         decoration: BoxDecoration(
                           color: Colors.red.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                          border: Border.all(
+                            color: Colors.red.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.warning,
-                              color: Colors.red,
-                              size: 20,
-                            ),
+                            Icon(Icons.warning, color: Colors.red, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -655,7 +616,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             // Naviguer vers le store
-                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst);
                             // Note: Vous devrez adapter cette navigation selon votre structure
                           },
                           icon: const Icon(Icons.shopping_cart),
@@ -683,18 +646,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[600],
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
         ],
       ),
     );
@@ -738,7 +691,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
       ),
       child: Consumer2<ArcadeProvider, TicketProvider>(
         builder: (context, arcadeProvider, ticketProvider, child) {
-          final hasEnoughTickets = ticketProvider.ticketBalance >= _selectedGame!.ticketCost;
+          final hasEnoughTickets =
+              ticketProvider.ticketBalance >= _selectedGame!.ticketCost;
           final isCreating = arcadeProvider.isCreatingReservation;
 
           return ElevatedButton.icon(
@@ -747,13 +701,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 : null,
             icon: isCreating
                 ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
                 : const Icon(Icons.event_seat),
             label: Text(
               isCreating
@@ -763,7 +717,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   : 'Tickets insuffisants',
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: hasEnoughTickets ? Colors.deepPurple : Colors.grey,
+              backgroundColor: hasEnoughTickets
+                  ? AppColors.primary
+                  : Colors.grey,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -801,7 +757,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
               children: [
                 const Text(
                   'Réservation créée avec succès !',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w800),
                 ),
                 Text('Code de déverrouillage: ${reservation.unlockCode}'),
                 if (reservation.positionInQueue != null)
@@ -826,7 +782,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              arcadeProvider.errorMessage ?? 'Erreur lors de la création de la réservation',
+              arcadeProvider.errorMessage ??
+                  'Erreur lors de la création de la réservation',
             ),
             backgroundColor: Colors.red,
           ),
@@ -837,62 +794,65 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   Future<bool> _showConfirmationDialog() async {
     return await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmer la réservation'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Vous êtes sur le point de créer cette réservation :'),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Borne : ${widget.arcade.nom}'),
-                    Text('Jeu : ${_selectedGame!.nom}'),
-                    Text('Slot : ${_selectedGame!.slotNumber}'),
-                    if (_isMultiplayer && _selectedFriend != null)
-                      Text('Avec : ${_selectedFriend!.pseudo}')
-                    else if (_isMultiplayer)
-                      const Text('Mode : Multijoueur (solo)'),
-                    Text('Coût : ${_selectedGame!.ticketCost} tickets'),
-                  ],
-                ),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Confirmer la réservation'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Vous êtes sur le point de créer cette réservation :',
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Borne : ${widget.arcade.nom}'),
+                        Text('Jeu : ${_selectedGame!.nom}'),
+                        Text('Slot : ${_selectedGame!.slotNumber}'),
+                        if (_isMultiplayer && _selectedFriend != null)
+                          Text('Avec : ${_selectedFriend!.pseudo}')
+                        else if (_isMultiplayer)
+                          const Text('Mode : Multijoueur (solo)'),
+                        Text('Coût : ${_selectedGame!.ticketCost} tickets'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Cette action débitera vos tickets immédiatement.',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'Cette action débitera vos tickets immédiatement.',
-                style: TextStyle(
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Annuler'),
                 ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annuler'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Confirmer'),
-            ),
-          ],
-        );
-      },
-    ) ?? false;
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Confirmer'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }

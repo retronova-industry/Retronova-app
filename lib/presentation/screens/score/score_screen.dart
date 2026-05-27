@@ -1,12 +1,11 @@
 // lib/presentation/screens/score/score_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/score_provider.dart';
 import '../../../providers/arcade_provider.dart';
 import '../../../models/score_model.dart';
-import '../../../models/game_model.dart';
-import '../../../models/arcade_model.dart';
 
 class ScoreScreen extends StatefulWidget {
   const ScoreScreen({super.key});
@@ -15,7 +14,8 @@ class ScoreScreen extends StatefulWidget {
   State<ScoreScreen> createState() => _ScoreScreenState();
 }
 
-class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin {
+class _ScoreScreenState extends State<ScoreScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -26,7 +26,10 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
     // Charger les données au démarrage
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final scoreProvider = Provider.of<ScoreProvider>(context, listen: false);
-      final arcadeProvider = Provider.of<ArcadeProvider>(context, listen: false);
+      final arcadeProvider = Provider.of<ArcadeProvider>(
+        context,
+        listen: false,
+      );
 
       // Passer les données des jeux/bornes au ScoreProvider
       scoreProvider.setAvailableGames(arcadeProvider.games);
@@ -80,9 +83,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
         _buildFiltersSection(scoreProvider),
 
         // Liste des scores
-        Expanded(
-          child: _buildScoresList(scoreProvider),
-        ),
+        Expanded(child: _buildScoresList(scoreProvider)),
       ],
     );
   }
@@ -105,18 +106,11 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
         children: [
           Row(
             children: [
-              Icon(
-                Icons.filter_list,
-                color: Colors.deepPurple,
-                size: 20,
-              ),
+              Icon(Icons.filter_list, color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               const Text(
                 'Filtres',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
               const Spacer(),
               if (scoreProvider.hasActiveFilters)
@@ -159,24 +153,20 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.filter_alt,
-                    size: 16,
-                    color: Colors.deepPurple,
-                  ),
+                  Icon(Icons.filter_alt, size: 16, color: AppColors.primary),
                   const SizedBox(width: 4),
                   Text(
                     '${scoreProvider.activeFilterCount} filtre${scoreProvider.activeFilterCount > 1 ? 's' : ''} actif${scoreProvider.activeFilterCount > 1 ? 's' : ''}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.deepPurple,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
@@ -192,24 +182,24 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
     return PopupMenuButton<int?>(
       onSelected: (gameId) => scoreProvider.setGameFilter(gameId),
       itemBuilder: (context) => [
-        const PopupMenuItem<int?>(
-          value: null,
-          child: Text('Tous les jeux'),
-        ),
+        const PopupMenuItem<int?>(value: null, child: Text('Tous les jeux')),
         const PopupMenuDivider(),
-        ...scoreProvider.availableGames.map((game) => PopupMenuItem<int?>(
-          value: game.id,
-          child: Text(game.nom),
-        )),
+        ...scoreProvider.availableGames.map(
+          (game) => PopupMenuItem<int?>(value: game.id, child: Text(game.nom)),
+        ),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: scoreProvider.selectedGameId != null ? Colors.deepPurple : Colors.grey.shade300,
+            color: scoreProvider.selectedGameId != null
+                ? AppColors.primary
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
-          color: scoreProvider.selectedGameId != null ? Colors.deepPurple.withOpacity(0.1) : null,
+          color: scoreProvider.selectedGameId != null
+              ? AppColors.primary.withOpacity(0.1)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -217,24 +207,35 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
             Icon(
               Icons.videogame_asset,
               size: 16,
-              color: scoreProvider.selectedGameId != null ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.selectedGameId != null
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
             const SizedBox(width: 4),
             Text(
               scoreProvider.selectedGameId != null
-                  ? scoreProvider.findGameById(scoreProvider.selectedGameId!)?.nom ?? 'Jeu inconnu'
+                  ? scoreProvider
+                            .findGameById(scoreProvider.selectedGameId!)
+                            ?.nom ??
+                        'Jeu inconnu'
                   : 'Jeu',
               style: TextStyle(
                 fontSize: 14,
-                color: scoreProvider.selectedGameId != null ? Colors.deepPurple : Colors.grey[600],
-                fontWeight: scoreProvider.selectedGameId != null ? FontWeight.w500 : FontWeight.normal,
+                color: scoreProvider.selectedGameId != null
+                    ? AppColors.primary
+                    : Colors.grey[600],
+                fontWeight: scoreProvider.selectedGameId != null
+                    ? FontWeight.w800
+                    : FontWeight.w800,
               ),
             ),
             const SizedBox(width: 4),
             Icon(
               Icons.arrow_drop_down,
               size: 16,
-              color: scoreProvider.selectedGameId != null ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.selectedGameId != null
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
           ],
         ),
@@ -251,19 +252,23 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
           child: Text('Toutes les bornes'),
         ),
         const PopupMenuDivider(),
-        ...scoreProvider.availableArcades.map((arcade) => PopupMenuItem<int?>(
-          value: arcade.id,
-          child: Text(arcade.nom),
-        )),
+        ...scoreProvider.availableArcades.map(
+          (arcade) =>
+              PopupMenuItem<int?>(value: arcade.id, child: Text(arcade.nom)),
+        ),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: scoreProvider.selectedArcadeId != null ? Colors.deepPurple : Colors.grey.shade300,
+            color: scoreProvider.selectedArcadeId != null
+                ? AppColors.primary
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
-          color: scoreProvider.selectedArcadeId != null ? Colors.deepPurple.withOpacity(0.1) : null,
+          color: scoreProvider.selectedArcadeId != null
+              ? AppColors.primary.withOpacity(0.1)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -271,24 +276,35 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
             Icon(
               Icons.sports_esports,
               size: 16,
-              color: scoreProvider.selectedArcadeId != null ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.selectedArcadeId != null
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
             const SizedBox(width: 4),
             Text(
               scoreProvider.selectedArcadeId != null
-                  ? scoreProvider.findArcadeById(scoreProvider.selectedArcadeId!)?.nom ?? 'Borne inconnue'
+                  ? scoreProvider
+                            .findArcadeById(scoreProvider.selectedArcadeId!)
+                            ?.nom ??
+                        'Borne inconnue'
                   : 'Borne',
               style: TextStyle(
                 fontSize: 14,
-                color: scoreProvider.selectedArcadeId != null ? Colors.deepPurple : Colors.grey[600],
-                fontWeight: scoreProvider.selectedArcadeId != null ? FontWeight.w500 : FontWeight.normal,
+                color: scoreProvider.selectedArcadeId != null
+                    ? AppColors.primary
+                    : Colors.grey[600],
+                fontWeight: scoreProvider.selectedArcadeId != null
+                    ? FontWeight.w800
+                    : FontWeight.w800,
               ),
             ),
             const SizedBox(width: 4),
             Icon(
               Icons.arrow_drop_down,
               size: 16,
-              color: scoreProvider.selectedArcadeId != null ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.selectedArcadeId != null
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
           ],
         ),
@@ -298,15 +314,20 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
 
   Widget _buildFriendsOnlyFilter(ScoreProvider scoreProvider) {
     return GestureDetector(
-      onTap: () => scoreProvider.setFriendsOnlyFilter(!scoreProvider.friendsOnly),
+      onTap: () =>
+          scoreProvider.setFriendsOnlyFilter(!scoreProvider.friendsOnly),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: scoreProvider.friendsOnly ? Colors.deepPurple : Colors.grey.shade300,
+            color: scoreProvider.friendsOnly
+                ? AppColors.primary
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
-          color: scoreProvider.friendsOnly ? Colors.deepPurple.withOpacity(0.1) : null,
+          color: scoreProvider.friendsOnly
+              ? AppColors.primary.withOpacity(0.1)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -314,15 +335,21 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
             Icon(
               scoreProvider.friendsOnly ? Icons.people : Icons.people_outline,
               size: 16,
-              color: scoreProvider.friendsOnly ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.friendsOnly
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
             const SizedBox(width: 4),
             Text(
               'Amis',
               style: TextStyle(
                 fontSize: 14,
-                color: scoreProvider.friendsOnly ? Colors.deepPurple : Colors.grey[600],
-                fontWeight: scoreProvider.friendsOnly ? FontWeight.w500 : FontWeight.normal,
+                color: scoreProvider.friendsOnly
+                    ? AppColors.primary
+                    : Colors.grey[600],
+                fontWeight: scoreProvider.friendsOnly
+                    ? FontWeight.w800
+                    : FontWeight.w800,
               ),
             ),
           ],
@@ -333,31 +360,45 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
 
   Widget _buildSinglePlayerFilter(ScoreProvider scoreProvider) {
     return GestureDetector(
-      onTap: () => scoreProvider.setSinglePlayerOnlyFilter(!scoreProvider.singlePlayerOnly),
+      onTap: () => scoreProvider.setSinglePlayerOnlyFilter(
+        !scoreProvider.singlePlayerOnly,
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: scoreProvider.singlePlayerOnly ? Colors.deepPurple : Colors.grey.shade300,
+            color: scoreProvider.singlePlayerOnly
+                ? AppColors.primary
+                : Colors.grey.shade300,
           ),
           borderRadius: BorderRadius.circular(8),
-          color: scoreProvider.singlePlayerOnly ? Colors.deepPurple.withOpacity(0.1) : null,
+          color: scoreProvider.singlePlayerOnly
+              ? AppColors.primary.withOpacity(0.1)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              scoreProvider.singlePlayerOnly ? Icons.person : Icons.person_outline,
+              scoreProvider.singlePlayerOnly
+                  ? Icons.person
+                  : Icons.person_outline,
               size: 16,
-              color: scoreProvider.singlePlayerOnly ? Colors.deepPurple : Colors.grey[600],
+              color: scoreProvider.singlePlayerOnly
+                  ? AppColors.primary
+                  : Colors.grey[600],
             ),
             const SizedBox(width: 4),
             Text(
               'Solo',
               style: TextStyle(
                 fontSize: 14,
-                color: scoreProvider.singlePlayerOnly ? Colors.deepPurple : Colors.grey[600],
-                fontWeight: scoreProvider.singlePlayerOnly ? FontWeight.w500 : FontWeight.normal,
+                color: scoreProvider.singlePlayerOnly
+                    ? AppColors.primary
+                    : Colors.grey[600],
+                fontWeight: scoreProvider.singlePlayerOnly
+                    ? FontWeight.w800
+                    : FontWeight.w800,
               ),
             ),
           ],
@@ -386,7 +427,9 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              scoreProvider.hasActiveFilters ? Icons.search_off : Icons.emoji_events_outlined,
+              scoreProvider.hasActiveFilters
+                  ? Icons.search_off
+                  : Icons.emoji_events_outlined,
               size: 64,
               color: Colors.grey,
             ),
@@ -444,7 +487,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
       positionColor = Colors.brown;
       positionIcon = Icons.emoji_events;
     } else {
-      positionColor = Colors.deepPurple;
+      positionColor = AppColors.primary;
       positionIcon = Icons.sports_score;
     }
 
@@ -470,13 +513,13 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                     child: position <= 3
                         ? Icon(positionIcon, color: positionColor, size: 16)
                         : Text(
-                      '$position',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: positionColor,
-                        fontSize: 12,
-                      ),
-                    ),
+                            '$position',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: positionColor,
+                              fontSize: 12,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -488,23 +531,25 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                         score.gameName,
                         style: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       Text(
                         score.arcadeName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: score.isSinglePlayer ? Colors.blue.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+                    color: score.isSinglePlayer
+                        ? Colors.blue.withOpacity(0.1)
+                        : Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -513,15 +558,19 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                       Icon(
                         score.isSinglePlayer ? Icons.person : Icons.people,
                         size: 14,
-                        color: score.isSinglePlayer ? Colors.blue : Colors.green,
+                        color: score.isSinglePlayer
+                            ? Colors.blue
+                            : Colors.green,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         score.isSinglePlayer ? 'Solo' : 'Multi',
                         style: TextStyle(
                           fontSize: 12,
-                          color: score.isSinglePlayer ? Colors.blue : Colors.green,
-                          fontWeight: FontWeight.w500,
+                          color: score.isSinglePlayer
+                              ? Colors.blue
+                              : Colors.green,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -544,7 +593,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -552,7 +601,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                         score.playersText,
                         style: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -566,7 +615,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -574,8 +623,8 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                       score.scoreText,
                       style: const TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
                       ),
                     ),
                   ],
@@ -597,7 +646,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[700],
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
@@ -608,18 +657,11 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
             // Date
             Row(
               children: [
-                Icon(
-                  Icons.access_time,
-                  size: 14,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 4),
                 Text(
                   _formatDate(score.createdAt),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -689,14 +731,14 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                     const Icon(
                       Icons.person,
                       size: 48,
-                      color: Colors.deepPurple,
+                      color: AppColors.primary,
                     ),
                     const SizedBox(height: 16),
                     const Text(
                       'Mes Statistiques',
                       style: TextStyle(
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -707,7 +749,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                             'Parties jouées',
                             '${stats.totalGames}',
                             Icons.sports_esports,
-                            Colors.deepPurple,
+                            AppColors.primary,
                           ),
                         ),
                         Expanded(
@@ -738,7 +780,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                       'Répartition des parties',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -776,7 +818,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                         'Performances multijoueur',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -825,7 +867,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                 icon: const Icon(Icons.refresh),
                 label: const Text('Actualiser les statistiques'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
@@ -837,7 +879,12 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
@@ -851,25 +898,24 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  Widget _buildDetailedStatRow(String label, String value, IconData icon, Color color) {
+  Widget _buildDetailedStatRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Row(
       children: [
         Container(
@@ -884,18 +930,15 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           ),
         ),
         Text(
           value,
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
           ),
         ),
       ],
@@ -977,21 +1020,21 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                         score.gameName,
                         style: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       Text(
                         score.arcadeName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getTimeAgoColor(score.createdAt).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -1001,7 +1044,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                     style: TextStyle(
                       fontSize: 12,
                       color: _getTimeAgoColor(score.createdAt),
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -1017,7 +1060,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                     score.playersText,
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -1025,8 +1068,8 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
                   score.scoreText,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
                   ),
                 ),
               ],
@@ -1058,7 +1101,15 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
     } else if (difference.inDays == 1) {
       return 'Hier à ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else if (difference.inDays < 7) {
-      final weekdays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+      final weekdays = [
+        'Lundi',
+        'Mardi',
+        'Mercredi',
+        'Jeudi',
+        'Vendredi',
+        'Samedi',
+        'Dimanche',
+      ];
       return '${weekdays[date.weekday - 1]} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else {
       return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';

@@ -1,11 +1,11 @@
 // lib/presentation/screens/friends/friends_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/friend_provider.dart';
 import '../../../models/friend_model.dart';
 import '../../../models/user_search_model.dart';
-import '../../../models/user_model.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -14,7 +14,8 @@ class FriendsScreen extends StatefulWidget {
   State<FriendsScreen> createState() => _FriendsScreenState();
 }
 
-class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateMixin {
+class _FriendsScreenState extends State<FriendsScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
 
@@ -25,7 +26,10 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
 
     // Charger les données initiales
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final friendProvider = Provider.of<FriendProvider>(context, listen: false);
+      final friendProvider = Provider.of<FriendProvider>(
+        context,
+        listen: false,
+      );
       friendProvider.loadFriends();
       friendProvider.loadFriendRequests();
     });
@@ -44,7 +48,9 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Supprimer ami'),
-          content: Text('Êtes-vous sûr de vouloir supprimer ${friend.fullName} de vos amis ?'),
+          content: Text(
+            'Êtes-vous sûr de vouloir supprimer ${friend.fullName} de vos amis ?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -53,15 +59,20 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                final friendProvider = Provider.of<FriendProvider>(context, listen: false);
+                final friendProvider = Provider.of<FriendProvider>(
+                  context,
+                  listen: false,
+                );
                 final success = await friendProvider.removeFriend(friend.id);
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success
-                          ? 'Ami supprimé avec succès'
-                          : friendProvider.errorMessage ?? 'Erreur lors de la suppression'
+                      content: Text(
+                        success
+                            ? 'Ami supprimé avec succès'
+                            : friendProvider.errorMessage ??
+                                  'Erreur lors de la suppression',
                       ),
                       backgroundColor: success ? Colors.green : Colors.red,
                     ),
@@ -154,18 +165,18 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.deepPurple.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withOpacity(0.1),
           child: Text(
             friend.pseudo.isNotEmpty ? friend.pseudo[0].toUpperCase() : '?',
             style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
             ),
           ),
         ),
         title: Text(
           friend.pseudo,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
           '@${friend.pseudo}',
@@ -229,7 +240,10 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildRequestCard(FriendshipModel request, FriendProvider friendProvider) {
+  Widget _buildRequestCard(
+    FriendshipModel request,
+    FriendProvider friendProvider,
+  ) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -239,14 +253,14 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
                 ? request.requester.pseudo[0].toUpperCase()
                 : '?',
             style: const TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.orange,
             ),
           ),
         ),
         title: Text(
           request.requester.pseudo,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
           '@${request.requester.pseudo}',
@@ -257,13 +271,16 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
           children: [
             IconButton(
               onPressed: () async {
-                final success = await friendProvider.acceptFriendRequest(request.id);
+                final success = await friendProvider.acceptFriendRequest(
+                  request.id,
+                );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success
-                          ? 'Demande acceptée !'
-                          : friendProvider.errorMessage ?? 'Erreur'
+                      content: Text(
+                        success
+                            ? 'Demande acceptée !'
+                            : friendProvider.errorMessage ?? 'Erreur',
                       ),
                       backgroundColor: success ? Colors.green : Colors.red,
                     ),
@@ -275,13 +292,16 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
             ),
             IconButton(
               onPressed: () async {
-                final success = await friendProvider.rejectFriendRequest(request.id);
+                final success = await friendProvider.rejectFriendRequest(
+                  request.id,
+                );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success
-                          ? 'Demande rejetée'
-                          : friendProvider.errorMessage ?? 'Erreur'
+                      content: Text(
+                        success
+                            ? 'Demande rejetée'
+                            : friendProvider.errorMessage ?? 'Erreur',
                       ),
                       backgroundColor: success ? Colors.orange : Colors.red,
                     ),
@@ -310,12 +330,12 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                onPressed: () {
-                  _searchController.clear();
-                  friendProvider.clearSearchResults();
-                },
-                icon: const Icon(Icons.clear),
-              )
+                      onPressed: () {
+                        _searchController.clear();
+                        friendProvider.clearSearchResults();
+                      },
+                      icon: const Icon(Icons.clear),
+                    )
                   : null,
               border: const OutlineInputBorder(),
             ),
@@ -330,9 +350,7 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
         ),
 
         // Résultats de recherche
-        Expanded(
-          child: _buildSearchResults(friendProvider),
-        ),
+        Expanded(child: _buildSearchResults(friendProvider)),
       ],
     );
   }
@@ -386,7 +404,10 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildSearchResultCard(UserSearchResult user, FriendProvider friendProvider) {
+  Widget _buildSearchResultCard(
+    UserSearchResult user,
+    FriendProvider friendProvider,
+  ) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -394,14 +415,14 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
           child: Text(
             user.pseudo.isNotEmpty ? user.pseudo[0].toUpperCase() : '?',
             style: const TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.blue,
             ),
           ),
         ),
         title: Text(
           user.pseudo, // UserSearchResult a une propriété fullName
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
           '@${user.pseudo}',
@@ -413,9 +434,10 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(success
-                      ? 'Demande d\'amitié envoyée !'
-                      : friendProvider.errorMessage ?? 'Erreur'
+                  content: Text(
+                    success
+                        ? 'Demande d\'amitié envoyée !'
+                        : friendProvider.errorMessage ?? 'Erreur',
                   ),
                   backgroundColor: success ? Colors.green : Colors.red,
                 ),
@@ -425,7 +447,7 @@ class _FriendsScreenState extends State<FriendsScreen> with TickerProviderStateM
           icon: const Icon(Icons.person_add, size: 18),
           label: const Text('Ajouter'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),

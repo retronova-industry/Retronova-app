@@ -1,5 +1,6 @@
 // lib/presentation/screens/auth/login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../providers/auth_provider.dart';
@@ -89,24 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 60),
 
                 // Logo et titre
-                const Icon(
-                  Icons.sports_esports,
-                  size: 80,
-                  color: Colors.deepPurple,
+                Image.asset(
+                  'assets/images/brand/retronova-logo-primary.png',
+                  height: 148,
+                  semanticLabel: 'Retronova',
                 ),
                 const SizedBox(height: 24),
-
-                const Text(
-                  'Retronova',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
 
                 Text(
                   widget.preFilledEmail != null
@@ -115,8 +104,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
-                    color: widget.preFilledEmail != null ? Colors.green : Colors.grey,
-                    fontWeight: widget.preFilledEmail != null ? FontWeight.w500 : FontWeight.normal,
+                    color: widget.preFilledEmail != null
+                        ? Colors.green
+                        : Colors.grey,
+                    fontWeight: widget.preFilledEmail != null
+                        ? FontWeight.w700
+                        : FontWeight.w600,
                   ),
                 ),
 
@@ -134,8 +127,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Mettre en évidence si pré-rempli
                     enabledBorder: widget.preFilledEmail != null
                         ? const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green, width: 2),
-                    )
+                            borderSide: BorderSide(
+                              color: Colors.green,
+                              width: 2,
+                            ),
+                          )
                         : const OutlineInputBorder(),
                   ),
                   validator: (value) {
@@ -210,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return ElevatedButton(
                       onPressed: authProvider.isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -219,17 +215,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: authProvider.isLoading
                           ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          strokeWidth: 2,
-                        ),
-                      )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                                strokeWidth: 2,
+                              ),
+                            )
                           : const Text(
-                        'Se connecter',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                              'Se connecter',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                     );
                   },
                 ),
@@ -251,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: const Text(
                         'S\'inscrire',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],

@@ -41,3 +41,13 @@ dependency_overrides:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/brand/
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat.ttf
+        - asset: assets/fonts/Montserrat-Italic.ttf
+          style: italic

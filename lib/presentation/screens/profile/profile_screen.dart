@@ -1,5 +1,6 @@
 // lib/presentation/screens/profile/profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:retronova_app/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../core/constants/app_strings.dart';
@@ -204,29 +205,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: _isLoading
           ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
-            ),
-            SizedBox(height: 16),
-            Text('Chargement du profil...'),
-          ],
-        ),
-      )
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text('Chargement du profil...'),
+                ],
+              ),
+            )
           : _userProfile == null
-          ? const Center(
-        child: Text('Impossible de charger le profil'),
-      )
+          ? const Center(child: Text('Impossible de charger le profil'))
           : RefreshIndicator(
-        onRefresh: _loadUserProfile,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
-          child: _isEditing ? _buildEditForm() : _buildProfileView(),
-        ),
-      ),
+              onRefresh: _loadUserProfile,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                child: _isEditing ? _buildEditForm() : _buildProfileView(),
+              ),
+            ),
     );
   }
 
@@ -239,15 +240,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Avatar utilisateur
         CircleAvatar(
           radius: 60,
-          backgroundColor: Colors.deepPurple.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withOpacity(0.1),
           child: Text(
             _userProfile!.pseudo.isNotEmpty
                 ? _userProfile!.pseudo[0].toUpperCase()
                 : _userProfile!.prenom[0].toUpperCase(),
             style: const TextStyle(
               fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
             ),
           ),
         ),
@@ -257,10 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Nom d'utilisateur
         Text(
           _userProfile!.fullName,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
         ),
 
         const SizedBox(height: 8),
@@ -271,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w800,
           ),
         ),
 
@@ -280,10 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Email
         Text(
           _userProfile!.email,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
         ),
 
         const SizedBox(height: 32),
@@ -300,14 +295,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.deepPurple, Colors.deepPurple.shade300],
+                colors: [AppColors.primary, AppColors.primaryLight],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(15),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.deepPurple.withOpacity(0.3),
+                  color: AppColors.primary.withOpacity(0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -330,8 +325,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const Text(
                           'Solde de tickets',
                           style: TextStyle(
-                            color: Colors.white70,
+                            color: AppColors.onPrimaryMuted,
                             fontSize: 14,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                         Consumer<TicketProvider>(
@@ -341,7 +337,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 28,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                               ),
                             );
                           },
@@ -351,7 +347,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -359,18 +358,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.shopping_cart,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      Icon(Icons.shopping_cart, color: Colors.white, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         'Store',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
@@ -392,10 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 const Text(
                   'Informations personnelles',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 16),
 
@@ -404,7 +396,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _buildInfoRow('Pseudo', _userProfile!.pseudo),
                 _buildInfoRow('Email', _userProfile!.email),
                 _buildInfoRow('Téléphone', _userProfile!.numeroTelephone),
-                _buildInfoRow('Date de naissance', _formatDate(_userProfile!.dateNaissance)),
+                _buildInfoRow(
+                  'Date de naissance',
+                  _formatDate(_userProfile!.dateNaissance),
+                ),
 
                 if (_userProfile!.createdAt != null)
                   _buildInfoRow(
@@ -448,10 +443,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const Text(
             'Modifier le profil',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
             textAlign: TextAlign.center,
           ),
 
@@ -607,18 +599,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                   child: _isSaving
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2,
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                            strokeWidth: 2,
+                          ),
+                        )
                       : const Text('Sauvegarder'),
                 ),
               ),
@@ -642,7 +636,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               '$label:',
               style: const TextStyle(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w800,
                 color: Colors.grey,
               ),
             ),
@@ -650,9 +644,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),
         ],
