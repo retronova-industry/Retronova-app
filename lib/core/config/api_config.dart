@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = 'http://10.31.34.93:8000/api/v1';
+  static const String baseUrl = 'http://10.31.33.20:8000/api/v1';
   static const String stripeReturnScheme = 'retronova';
   static const String stripeReturnHost = 'checkout';
   static const String stripeSuccessPath = '/success';
