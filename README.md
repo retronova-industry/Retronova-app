@@ -1,292 +1,153 @@
-# 🎮 Retronova App
+# Retronova App
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.8.1+-02569B?style=flat&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black)](https://firebase.google.com)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+Retronova est une application mobile Flutter pour decouvrir des bornes d'arcade, reserver une partie, utiliser des tickets virtuels, consulter des scores et gerer une liste d'amis.
 
-**Retronova** est une application mobile Flutter permettant aux utilisateurs de découvrir, réserver et jouer sur des bornes d'arcade retro dans leur région. L'application offre un système de tickets virtuels, un système d'amis, et des classements pour une expérience de jeu social complète.
+Derniere mise a jour de la documentation : 2026-05-27.
 
-## 🚀 Fonctionnalités
+## Lecture rapide
 
-### 🕹️ Arcade & Réservations
-- **Découverte de bornes** : Parcourez les bornes d'arcade près de chez vous
-- **Réservation de parties** : Réservez des créneaux de jeu avec un système de file d'attente
-- **Gestion des codes de déverrouillage** : Codes uniques pour débloquer vos parties
-- **Support multijoueur** : Invitez vos amis pour des parties en équipe
+- Guide d'installation complet : [docs/setup.md](docs/setup.md)
+- Contrats API attendus par l'app : [docs/api-contract.md](docs/api-contract.md)
+- Etat actuel, limites et priorites : [docs/current-state.md](docs/current-state.md)
+- Documentation technique : [documentation.md](documentation.md)
 
-### 🎯 Système de Scores
-- **Classements globaux** : Comparez vos performances avec tous les joueurs
-- **Statistiques personnelles** : Suivez vos victoires, défaites et progression
-- **Filtres avancés** : Filtrez par jeu, borne, amis ou mode de jeu
-- **Historique des parties** : Consultez toutes vos parties passées
+## Fonctionnalites
 
-### 🛒 Boutique & Tickets
-- **Achat de tickets** : Différentes offres avec économies progressives
-- **Codes promo** : Utilisez des codes promotionnels pour obtenir des tickets gratuits
-- **Historique des achats** : Suivez tous vos achats et utilisations de codes
-- **Solde en temps réel** : Consultez votre solde de tickets à tout moment
+- Authentification Firebase email / mot de passe.
+- Creation et mise a jour du profil utilisateur.
+- Liste des bornes d'arcade et des jeux disponibles.
+- Reservation de parties solo ou multijoueur.
+- Gestion du statut de reservation et code de deverrouillage.
+- Scores, classement et statistiques personnelles.
+- Boutique de tickets, solde, historique d'achats et codes promo.
+- Paiement via Stripe Checkout en redirection externe.
+- Recherche d'utilisateurs, demandes d'ami et liste d'amis.
 
-### 👥 Système Social
-- **Ajout d'amis** : Recherchez et ajoutez des joueurs
-- **Demandes d'amitié** : Gérez vos demandes entrantes et sortantes
-- **Parties entre amis** : Invitez vos amis pour des sessions de jeu
+## Stack technique
 
-### 👤 Profil Utilisateur
-- **Authentification Firebase** : Connexion sécurisée avec email/mot de passe
-- **Profil personnalisable** : Modifiez vos informations personnelles
-- **Statistiques détaillées** : Consultez vos performances globales
+- Flutter avec Dart SDK `^3.8.1`.
+- Firebase Core et Firebase Auth.
+- Provider pour la gestion d'etat.
+- API REST externe avec token Firebase dans le header `Authorization`.
+- Clients HTTP : `http` pour les services historiques, `dio` pour la couche paiement.
+- `url_launcher` pour ouvrir Stripe Checkout.
+- Material Design avec localisation `fr_FR`.
 
-## 🏗️ Architecture
+## Structure du projet
 
-### Structure du Projet
-```
+```text
 lib/
-├── app.dart                    # Configuration principale de l'app
-├── main.dart                   # Point d'entrée
-├── core/                       # Configuration et constantes
-│   ├── config/
-│   ├── constants/
-│   └── theme/
-├── models/                     # Modèles de données
-├── providers/                  # Gestion d'état (Provider pattern)
-├── services/                   # Services API et authentification
-└── presentation/              # Interface utilisateur
-    ├── screens/
-    └── widgets/
+  app.dart                         # MaterialApp, theme, localisation
+  main.dart                        # Firebase init + MultiProvider
+  core/
+    config/api_config.dart         # Base URL API + URLs retour Stripe
+    constants/                     # Couleurs, icones, textes
+    network/                       # Client Dio et exceptions API
+    theme/                         # Theme Flutter
+  models/                          # Modeles JSON utilises par les services
+  providers/                       # Etat applicatif via ChangeNotifier
+  repositories/                    # Acces API recent, notamment paiement
+  services/                        # Services API historiques avec package http
+  presentation/
+    screens/                       # Ecrans par domaine
+    widgets/                       # Widgets partages
+test/
+  widget_test.dart                 # Test de fumee minimal
 ```
 
-### Technologies
-- **Framework** : Flutter 3.8.1+
-- **Authentification** : Firebase Auth
-- **Gestion d'état** : Provider Pattern
-- **API** : REST API avec authentification JWT
-- **Validation** : Email Validator
-- **Requêtes HTTP** : Package HTTP de Dart
+## Installation courte
 
-## 🛠️ Installation
-
-### Prérequis
-- Flutter SDK 3.8.1 ou supérieur
-- Dart SDK 3.0+
-- Android Studio / VS Code
-- Compte Firebase
-- Émulateur Android/iOS ou appareil physique
-
-### Configuration Firebase
-
-1. **Créez un projet Firebase** sur [Firebase Console](https://console.firebase.google.com)
-
-2. **Activez l'authentification** :
-    - Allez dans Authentication > Sign-in method
-    - Activez "Email/Password"
-
-3. **Ajoutez les fichiers de configuration** :
-   ```bash
-   # Android
-   android/app/google-services.json
-   
-   # iOS
-   ios/Runner/GoogleService-Info.plist
-   ```
-
-### Installation des dépendances
+Pour le detail, voir [docs/setup.md](docs/setup.md).
 
 ```bash
-# Clonez le repository
-git clone https://github.com/votre-username/retronova_app.git
-cd retronova_app
-
-# Installez les dépendances Flutter
+flutter doctor
 flutter pub get
-
-# Pour iOS, installez les CocoaPods
-cd ios
-pod install
-cd ..
+flutter run
 ```
 
-### Configuration de l'API
+Avant de lancer l'app, verifier :
 
-Modifiez le fichier `lib/core/config/api_config.dart` :
+- `android/app/google-services.json` est present pour Android.
+- `ios/Runner/GoogleService-Info.plist` est present pour iOS.
+- `lib/core/config/api_config.dart` pointe vers une API accessible depuis l'emulateur ou le telephone.
+- Le backend accepte les tokens Firebase du projet configure.
+
+## Configuration API
+
+La base URL actuelle est definie ici :
 
 ```dart
-class ApiConfig {
-  static const String baseUrl = 'VOTRE_URL_API_ICI';
-  // ...
-}
+// lib/core/config/api_config.dart
+static const String baseUrl = 'http://10.31.33.20:8000/api/v1';
 ```
 
-### Configuration Stripe Checkout (retour dans l'app)
+Cette IP est une configuration locale/reseau. Pour reprendre le projet, remplacer cette valeur par l'URL du backend disponible dans votre environnement. Les endpoints attendus sont listes dans [docs/api-contract.md](docs/api-contract.md).
 
-Le flux de paiement actuel utilise **Stripe Checkout en redirection externe**.
+## Configuration Stripe Checkout
 
-- URL de retour succès à configurer côté backend Stripe :
-  `retronova://checkout/success`
-- URL de retour annulation à configurer côté backend Stripe :
-  `retronova://checkout/cancel`
+Le paiement utilise Stripe Checkout avec redirection externe.
 
-Le backend doit aussi exposer :
+URLs de retour attendues par l'app :
 
-- `POST /tickets/purchase` (création session Stripe Checkout)
-- `GET /tickets/purchase/{id}/status` (statut transaction)
-- webhook Stripe (`checkout.session.completed`, événements d'échec)
+```text
+retronova://checkout/success
+retronova://checkout/cancel
+```
 
-## 🚀 Lancement
+Le deep link est configure cote mobile :
 
-### Développement
+- Android : `android/app/src/main/AndroidManifest.xml`
+- iOS : `ios/Runner/Info.plist`
+
+Le backend doit creer la session Stripe, recevoir les webhooks Stripe et exposer le statut de la transaction a l'app.
+
+## Commandes utiles
+
 ```bash
-# Vérifiez la configuration
-flutter doctor
-
-# Lancez l'application
+flutter pub get
+flutter analyze
+flutter test
 flutter run
-
-# Mode debug avec hot reload
-flutter run --debug
-
-# Mode release
-flutter run --release
-```
-
-### Build de Production
-
-```bash
-# Android APK
 flutter build apk --release
-
-# Android App Bundle (recommandé pour Play Store)
 flutter build appbundle --release
-
-# iOS
 flutter build ios --release
 ```
 
-## 🏛️ Architecture des Providers
+## Tests
 
-L'application utilise le pattern Provider pour la gestion d'état :
+Etat actuel : les tests sont tres limites. `test/widget_test.dart` verifie seulement qu'un widget de test s'affiche. Avant une reprise serieuse, ajouter au minimum :
 
-### AuthProvider
-- Gestion de l'authentification Firebase
-- États de connexion/déconnexion
-- Gestion des erreurs d'authentification
+- tests unitaires des modeles `fromJson`;
+- tests des providers avec services mockes;
+- tests du flux authentification/profil;
+- tests du flux reservation;
+- tests du flux paiement et polling de statut.
 
-### ArcadeProvider
-- Gestion des bornes d'arcade
-- Réservations et annulations
-- Recherche et filtrage
+La commande `flutter drive --target=test_driver/app.dart` n'est pas documentee comme commande standard du projet, car le dossier `test_driver` n'existe pas actuellement.
 
-### ScoreProvider
-- Récupération des scores et classements
-- Statistiques personnelles
-- Filtres de scores
+## Points d'attention pour un nouveau dev
 
-### TicketProvider
-- Gestion du solde de tickets
-- Achats et codes promo
-- Historique des transactions
+- L'app depend fortement du backend : sans API compatible, plusieurs ecrans chargeront en erreur.
+- Les services `ApiService`, `ArcadeService`, `FriendService`, `ScoreService` et `TicketService` utilisent `http`.
+- `PaymentRepository` utilise `Dio` via `AppDioClient`.
+- Il y a encore des `print` de debug dans plusieurs providers/services.
+- Certains chemins iOS generes contiennent des traces d'un ancien poste de developpement ; ils ne doivent pas etre consideres comme de la configuration fonctionnelle.
+- Les identifiants package/bundle doivent etre verifies avant publication.
 
-### FriendProvider
-- Système d'amis
-- Recherche d'utilisateurs
-- Gestion des demandes d'amitié
+## Contribution
 
-## 🎨 Thème et Design
-
-L'application utilise Material Design 3 avec :
-- **Couleur principale** : Deep Purple (#6200EE)
-- **Couleur secondaire** : Teal (#03DAC6)
-- **Interface responsive** : Support tablettes et téléphones
-- **Mode sombre** : Prêt pour l'implémentation
-
-## 🔐 Sécurité
-
-- **Authentification** : Firebase Auth avec tokens JWT
-- **Validation côté client** : Validation des formulaires et emails
-- **Headers sécurisés** : Tokens d'authentification dans toutes les requêtes API
-- **Gestion d'erreurs** : Gestion robuste des erreurs réseau et d'authentification
-
-## 📱 Plateformes Supportées
-
-- ✅ Android (API 23+)
-- ✅ iOS (12.0+)
-- 🔄 Web (en développement)
-
-## 🧪 Tests
+Avant une PR ou une reprise de fonctionnalite :
 
 ```bash
-# Lancer tous les tests
+flutter pub get
+flutter analyze
 flutter test
-
-# Tests avec couverture
-flutter test --coverage
-
-# Tests d'intégration
-flutter drive --target=test_driver/app.dart
 ```
 
-## 📦 Dépendances Principales
+Recommandations :
 
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  firebase_core: ^3.14.0
-  firebase_auth: ^5.6.0
-  provider: ^6.1.5
-  http: ^1.4.0
-  email_validator: ^2.1.17
-  flutter_localizations:
-    sdk: flutter
-```
+- garder le decoupage existant `model -> service/repository -> provider -> screen`;
+- documenter tout nouvel endpoint dans [docs/api-contract.md](docs/api-contract.md);
+- eviter d'ajouter de la logique metier lourde dans les widgets;
+- ajouter un test quand une transformation JSON, un provider ou un flux critique change.
 
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! Voici comment contribuer :
-
-1. **Fork** le projet
-2. **Créez** votre branche de fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. **Commitez** vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** vers la branche (`git push origin feature/AmazingFeature`)
-5. **Ouvrez** une Pull Request
-
-### Standards de Code
-- Suivez les [conventions Dart](https://dart.dev/guides/language/effective-dart)
-- Utilisez `flutter analyze` pour vérifier le code
-- Ajoutez des tests pour les nouvelles fonctionnalités
-- Documentez les fonctions publiques
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-## 👥 Équipe
-
-- **Développeur Principal** - [@votre-username](https://github.com/votre-username)
-
-## 📞 Support
-
-Pour toute question ou problème :
-- 🐛 [Issues GitHub](https://github.com/votre-username/retronova_app/issues)
-- 📧 Email : support@retronova.com
-- 💬 Discord : [Serveur Retronova](https://discord.gg/retronova)
-
-## 🗺️ Roadmap
-
-### Version 1.1 (Prochaine)
-- [ ] Mode hors ligne pour les profils
-- [ ] Notifications push pour les réservations
-- [ ] Système de achievements/badges
-- [ ] Partage de scores sur les réseaux sociaux
-
-### Version 1.2 (Futur)
-- [ ] Mode sombre complet
-- [ ] Support des langues multiples
-- [ ] Chat en temps réel
-- [ ] Tournois organisés
-
----
-
-<div align="center">
-  <p><strong>Fait avec ❤️ et Flutter</strong></p>
-  <p>© 2024 Retronova. Tous droits réservés.</p>
-</div>

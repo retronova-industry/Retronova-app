@@ -1,375 +1,308 @@
-# 📱 Documentation Technique - Retronova App
+# Documentation technique - Retronova App
 
-## 🎯 Vue d'ensemble du projet
+Ce document explique comment l'application est organisee et comment un developpeur peut la faire evoluer sans devoir tout deduire depuis les ecrans.
 
-**Retronova** est une application mobile développée avec Flutter permettant aux utilisateurs de découvrir, réserver et jouer sur des bornes d'arcade rétro dans leur région. L'application propose un écosystème complet avec un système de tickets virtuels, gestion d'amis, classements et codes promotionnels.
+## Objectif du produit
 
-### 🎮 Concept principal
+Retronova est une application mobile Flutter centree sur les bornes d'arcade retro :
 
-L'application transforme l'expérience des bornes d'arcade traditionnelles en une plateforme moderne et sociale, permettant :
-- La géolocalisation des bornes d'arcade
-- La réservation de créneaux de jeu
-- Un système monétaire virtuel (tickets)
-- Une dimension sociale avec amis et classements
+- trouver une borne et les jeux disponibles;
+- reserver une partie avec un cout en tickets;
+- afficher un code de deverrouillage pour la borne;
+- consulter les scores et statistiques;
+- acheter des tickets avec Stripe Checkout;
+- utiliser des codes promo;
+- ajouter des amis et jouer en multijoueur.
 
----
+## Architecture globale
 
-## 🛠️ Choix technologiques et justifications
+L'app suit une architecture Flutter simple :
 
-### **Framework principal : Flutter**
-
-**Justifications :**
-- **Développement cross-platform** : Une seule base de code pour Android et iOS
-- **Performance native** : Compilation en code natif pour des performances optimales
-- **Écosystème riche** : Large gamme de packages et plugins disponibles
-- **Hot Reload** : Développement rapide et itératif
-- **Material Design 3** : Interface moderne et cohérente
-
-### **Architecture d'état : Provider Pattern**
-
-**Justifications :**
-- **Simplicité** : Plus simple que Bloc ou Riverpod pour une équipe
-- **Performance** : Rebuilds optimisés avec Consumer widgets
-- **Scalabilité** : Facilement extensible pour de nouvelles fonctionnalités
-- **Maintenabilité** : Séparation claire entre logique métier et UI
-
-### **Backend et authentification : Firebase**
-
-**Justifications :**
-- **Authentication robuste** : Gestion sécurisée des utilisateurs
-- **Rapidité de développement** : Services prêts à l'emploi
-- **Scalabilité automatique** : Infrastructure gérée par Google
-- **Sécurité** : Tokens JWT et chiffrement intégré
-
-### **API REST personnalisée**
-
-**Justifications :**
-- **Flexibilité métier** : Logique spécifique aux bornes d'arcade
-- **Performance** : Endpoints optimisés pour les besoins mobiles
-- **Contrôle total** : Gestion fine des données et permissions
-- **Intégration** : Connexion avec systèmes existants des bornes
-
----
-
-## 🎯 Objectifs du projet
-
-### **Objectifs utilisateurs**
-1. **Découverte simplifiée** : Trouver facilement des bornes d'arcade proches
-2. **Réservation fluide** : Éviter les files d'attente physiques
-3. **Expérience sociale** : Jouer et comparer ses scores avec des amis
-4. **Gamification** : Système de tickets et promotions engageant
-
-### **Objectifs techniques**
-1. **Performance** : Application rapide et responsive
-2. **Fiabilité** : Gestion robuste des erreurs et états de connexion
-3. **Sécurité** : Protection des données utilisateurs et transactions
-4. **Maintenabilité** : Code structuré et documenté
-5. **Scalabilité** : Architecture prête pour la croissance
-
-### **Objectifs business**
-1. **Monétisation** : Vente de tickets virtuels
-2. **Fidélisation** : Système d'amis et classements
-3. **Analytics** : Suivi des usages et préférences
-4. **Marketing** : Codes promotionnels et offres
-
----
-
-## 🏗️ Architecture de l'application
-
-### **Structure des dossiers**
-
-```
-lib/
-├── app.dart                    # Configuration principale
-├── main.dart                   # Point d'entrée
-├── core/                       # Configuration et constantes
-│   ├── config/                 # Configuration API et Firebase
-│   ├── constants/              # Couleurs, icônes, strings
-│   └── theme/                  # Thème Material Design
-├── models/                     # Modèles de données
-├── providers/                  # Gestion d'état (Provider)
-├── services/                   # Services API et authentification
-└── presentation/               # Interface utilisateur
-    ├── screens/                # Écrans de l'application
-    └── widgets/                # Composants réutilisables
+```text
+UI screens/widgets
+        |
+        v
+Providers ChangeNotifier
+        |
+        v
+Services / Repositories
+        |
+        v
+API REST + Firebase Auth + Stripe
 ```
 
-### **Providers (Gestion d'état)**
+Les widgets lisent l'etat depuis les providers. Les providers appellent les services ou repositories. Les services transforment les reponses JSON en modeles Dart.
 
-1. **AuthProvider** : Authentification Firebase
-2. **ArcadeProvider** : Gestion des bornes et réservations
-3. **ScoreProvider** : Scores et statistiques
-4. **TicketProvider** : Solde de tickets et achats
-5. **FriendProvider** : Système d'amis
+## Demarrage applicatif
 
-### **Services**
+- `lib/main.dart`
+  - initialise Flutter;
+  - initialise Firebase avec `Firebase.initializeApp()`;
+  - installe les providers dans un `MultiProvider`.
 
-1. **AuthService** : Interface Firebase Authentication
-2. **ApiService** : Gestion utilisateurs via API REST
-3. **ArcadeService** : Bornes, jeux et réservations
-4. **ScoreService** : Récupération scores et stats
-5. **TicketService** : Achats tickets et codes promo
-6. **FriendService** : Recherche utilisateurs et amitié
+- `lib/app.dart`
+  - configure `MaterialApp`;
+  - applique le theme;
+  - active les localisations `fr_FR` et `en_US`;
+  - affiche `AuthWrapper` en page racine.
 
----
+- `lib/presentation/widgets/auth_wrapper.dart`
+  - verifie l'etat Firebase;
+  - affiche `LoginScreen` si l'utilisateur n'est pas connecte;
+  - affiche `MainNavigation` si l'utilisateur est connecte;
+  - charge le solde de tickets apres connexion.
 
-## ⚙️ Fonctionnalités implémentées
+## Navigation
 
-### 🔐 **Authentification et profil**
+La navigation principale est dans `lib/presentation/widgets/main_navigation.dart`.
 
-**Fonctionnalités :**
-- Inscription avec email/mot de passe via Firebase
-- Connexion sécurisée avec gestion des erreurs
-- Profil utilisateur complet (nom, prénom, pseudo, téléphone, date de naissance)
-- Modification du profil en temps réel
-- Réinitialisation de mot de passe
-- Déconnexion sécurisée
+Onglets actuels :
 
-**Implémentation technique :**
-- Firebase Authentication pour la sécurité
-- Synchronisation avec API REST personnalisée
-- Validation côté client (email, téléphone, etc.)
-- Gestion des états d'erreur et de chargement
+1. `ArcadeScreen`
+2. `ScoreScreen`
+3. `StoreScreen`
+4. `FriendsScreen`
+5. `ProfileScreen`
 
-### 🕹️ **Gestion des bornes d'arcade**
+L'onglet actif est conserve dans un `IndexedStack`, donc les ecrans restent montes quand on change d'onglet.
 
-**Fonctionnalités :**
-- Liste des bornes avec géolocalisation
-- Détails complets de chaque borne (jeux disponibles, distance)
-- Recherche par nom de borne ou jeu
-- Réservation de créneaux de jeu
-- Gestion de la file d'attente
-- Codes de déverrouillage uniques
-- Annulation de réservations
+## Providers
 
-**Implémentation technique :**
-- Calcul de distance avec formule de Haversine
-- API REST pour les données temps réel
-- Gestion des états de réservation (en attente, en cours, terminée)
-- Interface utilisateur intuitive avec Material Design
+### AuthProvider
 
-### 🏆 **Système de scores et classements**
+Fichier : `lib/providers/auth_provider.dart`
 
-**Fonctionnalités :**
-- Classements globaux et filtres avancés
-- Statistiques personnelles détaillées
-- Filtrage par jeu, borne, amis, mode solo/multi
-- Historique des parties récentes
-- Calcul du taux de victoire
-- Séparation parties solo/multijoueur
+Responsabilites :
 
-**Implémentation technique :**
-- API optimisée avec paramètres de requête
-- Cache local pour performance
-- Mise à jour temps réel des statistiques
-- Interface responsive pour différentes tailles d'écran
+- inscription Firebase;
+- connexion/deconnexion;
+- reinitialisation du mot de passe;
+- synchronisation du profil avec l'API via `ApiService`;
+- etats `isLoading`, `isAuthenticated`, `error`.
 
-### 🎫 **Système de tickets virtuels**
+### ArcadeProvider
 
-**Fonctionnalités :**
-- Solde de tickets en temps réel
-- Différentes offres d'achat avec économies progressives
-- Codes promotionnels avec historique
-- Historique des achats et transactions
-- Calcul automatique des économies
-- Statistiques de dépenses
+Fichier : `lib/providers/arcade_provider.dart`
 
-**Implémentation technique :**
-- Transactions sécurisées via API
-- Mise à jour immédiate du solde
-- Validation des codes promo côté serveur
-- Interface d'achat intuitive avec confirmations
+Responsabilites :
 
-### 👥 **Système social et amis**
+- charger les bornes;
+- charger les jeux;
+- rechercher/filtrer les bornes;
+- creer et annuler des reservations;
+- charger les reservations de l'utilisateur.
 
-**Fonctionnalités :**
-- Recherche d'utilisateurs par pseudo
-- Envoi/réception de demandes d'amitié
-- Gestion des demandes en attente
-- Suppression d'amis
-- Invitation d'amis pour parties multijoueur
+Service associe : `ArcadeService`.
 
-**Implémentation technique :**
-- API de recherche optimisée
-- Gestion des états d'amitié (en attente, accepté, rejeté)
-- Interface de recherche responsive
-- Protection des données personnelles
+### ScoreProvider
 
----
+Fichier : `lib/providers/score_provider.dart`
 
-## 🔧 Méthodes de fabrication
+Responsabilites :
 
-### **Approche de développement**
+- charger les scores;
+- appliquer les filtres `gameId`, `arcadeId`, amis seulement, solo seulement;
+- charger les statistiques personnelles;
+- exposer des helpers de tri/affichage.
 
-1. **Architecture Driven Development**
-    - Conception de l'architecture avant le code
-    - Séparation claire des responsabilités
-    - Patterns de conception appliqués
+Service associe : `ScoreService`.
 
-2. **API-First Development**
-    - Définition des contrats API en amont
-    - Développement parallèle frontend/backend
-    - Tests avec données mockées
+### TicketProvider
 
-3. **Component-Based Development**
-    - Widgets réutilisables
-    - Composants atomiques
-    - Bibliothèque de composants cohérente
+Fichier : `lib/providers/ticket_provider.dart`
 
-### **Gestion des états**
+Responsabilites :
+
+- charger les offres de tickets;
+- charger le solde;
+- demarrer une session Stripe Checkout;
+- suivre le statut d'une transaction active;
+- charger l'historique d'achats;
+- utiliser un code promo;
+- charger l'historique des codes promo.
+
+Services associes :
+
+- `TicketService` pour l'historique, les promos et certains appels historiques;
+- `PaymentRepository` pour le flux Stripe Checkout recent.
+
+### FriendProvider
+
+Fichier : `lib/providers/friend_provider.dart`
+
+Responsabilites :
+
+- charger la liste d'amis;
+- charger les demandes recues;
+- rechercher des utilisateurs;
+- envoyer, accepter, rejeter une demande;
+- supprimer un ami.
+
+Service associe : `FriendService`.
+
+## Services et repositories
+
+### Services historiques avec `http`
+
+Ces classes appellent directement `package:http/http.dart` :
+
+- `ApiService`
+- `ArcadeService`
+- `FriendService`
+- `ScoreService`
+- `TicketService`
+
+Elles recuperent le token Firebase via :
 
 ```dart
-// Exemple d'implémentation Provider
-class ArcadeProvider with ChangeNotifier {
-  List<ArcadeModel> _arcades = [];
-  bool _isLoading = false;
-  
-  Future<void> loadArcades() async {
-    _setLoading(true);
-    try {
-      _arcades = await _arcadeService.getArcades();
-      notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      _setLoading(false);
-    }
-  }
-}
+FirebaseAuth.instance.currentUser?.getIdToken()
 ```
 
-### **Gestion des erreurs**
+Puis elles envoient :
 
-1. **Try-Catch global** dans tous les services
-2. **États d'erreur** dans les Providers
-3. **Feedback utilisateur** avec SnackBars
-4. **Logging** pour le debugging
-
-### **Performance et optimisation**
-
-1. **Lazy Loading** des données
-2. **Pagination** pour les listes importantes
-3. **Cache local** avec Provider
-4. **Optimisation des rebuilds** avec Consumer
-
-### **Sécurité**
-
-1. **Tokens JWT** pour l'authentification
-2. **Validation côté client et serveur**
-3. **Protection des routes sensibles**
-4. **Chiffrement des données sensibles**
-
----
-
-## 📱 Interface utilisateur
-
-### **Design System**
-
-- **Material Design 3** comme base
-- **Couleurs** : Deep Purple (#6200EE) et Teal (#03DAC6)
-- **Typography** : Roboto avec hiérarchie claire
-- **Navigation** : Bottom Navigation avec 5 onglets principaux
-
-### **Responsive Design**
-
-- **Adaptation automatique** aux différentes tailles d'écran
-- **Layout flexible** avec Expanded et Flexible
-- **Support tablette** prévu dans l'architecture
-
-### **Accessibilité**
-
-- **Semantic labels** pour les lecteurs d'écran
-- **Contraste** respectant les standards WCAG
-- **Navigation au clavier** prise en compte
-
----
-
-## 🚀 Installation et développement
-
-### **Prérequis**
-
-- Flutter SDK 3.8.1+
-- Dart SDK 3.0+
-- Android Studio ou VS Code
-- Compte Firebase configuré
-- Émulateur ou appareil physique
-
-### **Configuration**
-
-1. **Cloner le repository**
-```bash
-git clone https://github.com/votre-username/retronova_app.git
-cd retronova_app
+```text
+Authorization: Bearer <token>
+Content-Type: application/json
+Accept: application/json
 ```
 
-2. **Installer les dépendances**
-```bash
-flutter pub get
-```
+### Repository paiement avec `Dio`
 
-3. **Configurer Firebase**
-- Ajouter `google-services.json` (Android)
-- Ajouter `GoogleService-Info.plist` (iOS)
+`PaymentRepository` utilise `AppDioClient`.
 
-4. **Configurer l'API**
+`AppDioClient` ajoute automatiquement les headers JSON et ajoute le token Firebase quand l'option `authRequired` vaut `true`.
+
+Cette couche gere mieux les erreurs reseau via `ApiException`, `UnauthorizedException` et `NetworkException`.
+
+## Modeles principaux
+
+- `UserModel` : profil utilisateur.
+- `ArcadeModel` : borne et liste des jeux installes.
+- `GameModel` / `GameOnArcadeModel` : jeu et position sur une borne.
+- `ReservationModel` : reservation, code, statut et file d'attente.
+- `ScoreModel` / `PlayerStatsModel` : score et statistiques.
+- `TicketOfferModel` : offre de tickets.
+- `TicketPurchaseModel` : achat historique.
+- `TicketPurchaseCheckoutModel` : session Stripe Checkout.
+- `TicketPurchaseStatusModel` : statut d'achat.
+- `PromoCodeUseResponse` / `PromoCodeHistoryItem` : codes promo.
+- `FriendModel` / `FriendshipModel` / `UserSearchResult` : social.
+
+Les champs JSON exacts attendus sont documentes dans [docs/api-contract.md](docs/api-contract.md).
+
+## Configuration
+
+### API
+
+Fichier : `lib/core/config/api_config.dart`.
+
+La valeur actuelle :
+
 ```dart
-// lib/core/config/api_config.dart
-static const String baseUrl = 'VOTRE_URL_API';
+static const String baseUrl = 'http://10.31.33.20:8000/api/v1';
 ```
 
-5. **Lancer l'application**
+Cette URL doit etre adaptee selon l'environnement :
+
+- emulateur Android vers backend local : souvent `http://10.0.2.2:<port>/api/v1`;
+- telephone physique : IP locale de la machine backend;
+- production : URL HTTPS publique.
+
+### Firebase
+
+Fichiers attendus :
+
+- Android : `android/app/google-services.json`
+- iOS : `ios/Runner/GoogleService-Info.plist`
+
+Firebase Auth doit activer la connexion email/mot de passe.
+
+### Stripe
+
+Deep links :
+
+```text
+retronova://checkout/success
+retronova://checkout/cancel
+```
+
+Configuration mobile :
+
+- Android : intent filter dans `AndroidManifest.xml`;
+- iOS : `CFBundleURLTypes` dans `Info.plist`.
+
+Le backend reste responsable de Stripe : creation de session Checkout, webhooks, validation du paiement et mise a jour du solde.
+
+## Flux metier
+
+### Inscription
+
+1. L'utilisateur remplit le formulaire.
+2. `AuthProvider` cree le compte Firebase.
+3. L'app recupere le token Firebase.
+4. `ApiService.registerUser` envoie le profil au backend.
+5. L'utilisateur est connecte et l'app affiche la navigation principale.
+
+### Connexion
+
+1. `AuthProvider.signIn` connecte l'utilisateur via Firebase.
+2. `AuthWrapper` detecte l'utilisateur authentifie.
+3. `MainNavigation` est affiche.
+4. `TicketProvider.loadBalance` charge le solde.
+
+### Reservation
+
+1. `ArcadeProvider` charge les bornes et les jeux.
+2. L'utilisateur choisit une borne et un jeu.
+3. `ArcadeService.createReservation` envoie `arcade_id`, `game_id` et eventuellement `player2_id`.
+4. Le backend retourne une reservation avec `unlock_code`, `status`, `tickets_used`, `position_in_queue`.
+5. L'app affiche la reservation et permet l'annulation si le statut est `waiting`.
+
+### Paiement Stripe
+
+1. `TicketProvider.startCheckoutPurchase` appelle `PaymentRepository.createPurchaseSession`.
+2. Le backend retourne `transaction_id`, `stripe_session_id`, `checkout_url`.
+3. `StoreScreen` ouvre `checkout_url` avec `url_launcher`.
+4. Stripe redirige vers `retronova://checkout/success` ou `retronova://checkout/cancel`.
+5. L'app interroge `/tickets/purchase/{id}/status`.
+6. Si le statut est final, le solde est recharge.
+
+### Social
+
+1. Recherche via `/users/search?q=...`.
+2. Demande via `/friends/request`.
+3. Acceptation ou rejet via `/friends/request/{id}/accept` ou `/reject`.
+4. Liste des amis via `/friends/`.
+
+## Qualite et tests
+
+Commandes a executer avant modification importante :
+
 ```bash
-flutter run
+flutter analyze
+flutter test
 ```
 
----
+Etat actuel :
 
-## 🔮 Évolutions futures
+- pas de tests unitaires de modeles;
+- pas de tests providers;
+- pas de tests integration;
+- test widget minimal uniquement.
 
-### **Version 1.1**
-- [ ] Mode hors ligne pour les profils
-- [ ] Notifications push pour les réservations
-- [ ] Système d'achievements/badges
-- [ ] Partage de scores sur les réseaux sociaux
+Priorites de tests :
 
-### **Version 1.2**
-- [ ] Mode sombre complet
-- [ ] Support multilingue
-- [ ] Chat en temps réel
-- [ ] Tournois organisés
-- [ ] Intégration réalité augmentée
+1. `fromJson` des modeles critiques.
+2. `TicketProvider` et flux Checkout.
+3. `ArcadeProvider` et creation/annulation de reservation.
+4. `AuthProvider` avec service mocke.
 
-### **Optimisations techniques**
-- [ ] Migration vers Riverpod
-- [ ] Tests automatisés complets
-- [ ] CI/CD avec GitHub Actions
-- [ ] Analytics avancées
-- [ ] Performance monitoring
+## Regles de modification
 
----
+- Garder la logique reseau hors des widgets.
+- Mettre la logique d'etat dans les providers.
+- Creer ou mettre a jour un modele quand un JSON backend change.
+- Documenter chaque nouvel endpoint dans `docs/api-contract.md`.
+- Preferer une migration progressive vers `AppDioClient` si les anciens services sont refactorises.
+- Supprimer ou remplacer les `print` de debug avant une release.
 
-## 📊 Métriques et KPIs
-
-### **Métriques techniques**
-- Temps de chargement < 2s
-- Taux de crash < 0.1%
-- Performance 60 FPS
-- Taille APK optimisée
-
-### **Métriques business**
-- Taux de conversion achats
-- Rétention utilisateurs
-- Engagement social
-- Satisfaction utilisateur
-
----
-
-## 🤝 Contribution
-
-L'application suit les **conventions Dart** et utilise les **meilleures pratiques Flutter**. Le code est structuré pour faciliter la collaboration et la maintenance à long terme.
-
-### **Standards de qualité**
-- Code review obligatoire
-- Tests unitaires pour la logique métier
-- Documentation des fonctions publiques
-- Respect des patterns établis
